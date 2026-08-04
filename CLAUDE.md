@@ -7,7 +7,7 @@ completo del proyecto y las fases pendientes.
 
 Portfolio personal de Javier Morón: Angular 21 SPA publicada en https://valakyr159.github.io, con un
 chatbot RAG (sube un PDF, pregúntale) como proyecto destacado. El backend del chatbot vive en un repo
-hermano (`../PersonalWebsite-backend`) y se despliega por separado a Hugging Face Spaces.
+hermano (`../PersonalWebsite-backend`) y se despliega por separado a Render.
 
 ## Stack
 
@@ -62,15 +62,15 @@ Los "endpoints" son tools MCP (`upload_pdf`, `query_rag`, `clear_session`), no r
 del backend **no** hacen streaming token a token — llegan completas de una vez (limitación conocida,
 documentada en `Plan.md`, no un bug).
 
-`environment.apiUrl` (`src/environments/`) apunta a `localhost:8000` en dev y a la URL del Space de
-Hugging Face en producción (`environment.prod.ts` — placeholder hasta que el Space exista, ver `Plan.md`
+`environment.apiUrl` (`src/environments/`) apunta a `localhost:8000` en dev y a la URL del servicio de
+Render en producción (`environment.prod.ts` — placeholder hasta que el servicio exista, ver `Plan.md`
 Fase 2). El swap dev→prod ocurre vía `fileReplacements` en `angular.json`, no automáticamente.
 
 ## Backend
 
 Vive en `../PersonalWebsite-backend` (repo separado, no un submódulo). Ver el `CLAUDE.md` de ese repo.
-Se despliega con `git push` directo a un Hugging Face Space — no hay integración con GitHub Actions
-para esa parte (requeriría exponer credenciales del Space).
+Se despliega en Render a partir de `render.yaml` (Blueprint) — una vez conectado el repo en el dashboard
+de Render, cada push a `main` en el backend redespliega solo, sin pasar por GitHub Actions.
 
 ## Gotchas conocidos
 

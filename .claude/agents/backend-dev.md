@@ -27,6 +27,7 @@ Reglas de este proyecto:
   o los tests empezarán a descargar un modelo de ~90MB y a depender de red.
 - Después de cualquier cambio: `source .venv/bin/activate && pytest -v` (crea el venv con
   `python3 -m venv .venv && pip install -r requirements-dev.txt` si no existe).
-- El deploy a Hugging Face Spaces es manual (`git push space main`) — no está en el alcance de este
-  agente automatizarlo ni inventar credenciales; si el usuario lo pide, señala los pasos documentados
-  en `CLAUDE.md` y en el `Plan.md` del frontend (Fase 2).
+- El deploy a Render se conecta una sola vez desde el dashboard de Render (Blueprint sobre
+  `render.yaml`); después de eso, cada push a `main` redespliega solo. No está en el alcance de este
+  agente conectar esa cuenta ni inventar credenciales; si el usuario lo pide, señala los pasos
+  documentados en `CLAUDE.md` y en el `Plan.md` del frontend (Fase 2).

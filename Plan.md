@@ -7,8 +7,8 @@
 ## Estado
 
 ✅ Publicado en **https://valakyr159.github.io**
-✅ Chatbot RAG funcional (arquitectura MCP) — backend listo para desplegar, pendiente de que se cree
-   el Space de Hugging Face (requiere tu cuenta, ver Fase 2)
+✅ Chatbot RAG funcional (arquitectura MCP) — backend listo para desplegar, pendiente de que conectes
+   tu cuenta de GitHub a Render y crees el servicio (requiere tu cuenta, ver Fase 2)
 ✅ CI (build + tests + Lighthouse + e2e) y CD (deploy automático) en GitHub Actions
 ✅ 27 tests de frontend (Vitest), 15 de backend (pytest), 4 e2e (Playwright)
 ⬜ Contenido real de "Proyectos" (integrar apps construidas junto con Claude) — deliberadamente
@@ -29,12 +29,15 @@ PersonalWebsite-backend (repo hermano, local en ../PersonalWebsite-backend)
   Tools expuestos: upload_pdf, query_rag, clear_session
   Embeddings: sentence-transformers (all-MiniLM-L6-v2) en memoria por sesión
   LLM: Groq (llama-3.1-8b-instant)
-  → `git push` a un Hugging Face Space (Docker) → https://<space>.hf.space
+  → Render (Docker, plan free, vía render.yaml) → https://personalwebsite-backend.onrender.com
 ```
 
-Por qué dos repos separados: cada uno se despliega con un mecanismo de `git push` distinto
-(angular-cli-ghpages vs. Hugging Face Spaces) — mantenerlos separados evita que un pipeline
-interfiera con el otro.
+Por qué dos repos separados: cada uno se despliega a una plataforma distinta con su propio mecanismo
+(angular-cli-ghpages vs. Render) — mantenerlos separados evita que un pipeline interfiera con el otro.
+
+Por qué Render y no Hugging Face Spaces (como se planeó originalmente): el plan gratis de HF dejó de
+incluir los SDKs Docker/Gradio (solo Static, que no puede correr un backend Python) — Render sí ofrece
+Docker gratis sin tarjeta de crédito.
 
 Por qué MCP y no REST+streaming (decisión explícita, difiere del plan original): la implementación
 MCP ya funcionaba end-to-end cuando se encontró el proyecto; reescribir a REST hubiera significado
@@ -58,32 +61,31 @@ Se renombró a `valakyr159-portfolio-2024-archive` para liberar el nombre, y est
 (`PersonalWebsite` → `Valakyr159.github.io`) tomó su lugar. `ng deploy` ya no necesita `--base-href`
 (el default `/` es correcto en la raíz del dominio).
 
-### Fase 2 — Backend en Hugging Face Spaces ⬜ (requiere tu cuenta de HF)
+### Fase 2 — Backend en Render ⬜ (requiere tu cuenta)
 Código listo en `../PersonalWebsite-backend` (también en GitHub como
 [`Valakyr159/PersonalWebsite-backend`](https://github.com/Valakyr159/PersonalWebsite-backend), con CI en
-verde), con CORS restringido vía `ALLOWED_ORIGINS`,
-ruta `/health`, y límite de tamaño de PDF vía `MAX_PDF_SIZE_MB`). Pasos manuales pendientes (no se
-pueden automatizar sin tus credenciales de Hugging Face):
-1. Crear una cuenta/Space en https://huggingface.co/new-space — tipo **Docker**, hardware CPU básico, público.
-2. Añadir el repo remoto del Space y hacer push:
-   ```bash
-   cd ../PersonalWebsite-backend
-   git remote add space https://huggingface.co/spaces/<tu-usuario>/<nombre-space>
-   git push space main
-   ```
-3. En la configuración del Space (pestaña "Settings" → "Repository secrets"), añadir:
-   - `GROQ_API_KEY` (consíguela en https://console.groq.com)
-   - `ALLOWED_ORIGINS=https://valakyr159.github.io`
-4. Una vez el Space esté arriba, actualizar `src/environments/environment.prod.ts` en este repo con la
-   URL real (`https://<tu-usuario>-<nombre-space>.hf.space`) y redesplegar (`git push` a `main`, el
-   workflow de deploy se encarga solo).
+verde), con CORS restringido vía `ALLOWED_ORIGINS`, ruta `/health`, límite de tamaño de PDF vía
+`MAX_PDF_SIZE_MB`, y un `render.yaml` (Blueprint) listo para que Render lo detecte solo. Pasos manuales
+pendientes (no se pueden automatizar sin tu cuenta de Render):
+1. En https://dashboard.render.com → **New** → **Blueprint** → conectar tu cuenta de GitHub y elegir el
+   repo `Valakyr159/PersonalWebsite-backend`. Render lee `render.yaml` y crea el servicio solo (plan
+   free, Docker, healthcheck en `/health`).
+2. En la pestaña "Environment" del servicio, añadir el secret `GROQ_API_KEY` (consíguela en
+   https://console.groq.com) — `ALLOWED_ORIGINS` ya viene fijado a `https://valakyr159.github.io` desde
+   `render.yaml`.
+3. Una vez el servicio esté arriba, copiar su URL (`https://<nombre-del-servicio>.onrender.com`),
+   actualizar `src/environments/environment.prod.ts` en este repo con esa URL y redesplegar
+   (`git push` a `main`, el workflow de deploy se encarga solo).
+4. Después del primer deploy, cada push a `main` en el repo del backend redespliega solo — Render vigila
+   el repo (a diferencia de Hugging Face Spaces, que se descartó porque su plan gratis ya no incluye
+   Docker).
 
 ### Fase 3 — CI/CD ✅
 - `.github/workflows/ci.yml` (este repo): build + `ng test` + Lighthouse CI + Playwright e2e en cada PR/push.
 - `.github/workflows/deploy.yml`: build + `angular-cli-ghpages` automático en cada push a `main`.
 - `.github/workflows/ci.yml` (backend): `pytest` en cada PR/push.
-- El deploy del backend al Space sigue siendo manual (`git push space main`) — Hugging Face Spaces no
-  tiene una integración limpia con GitHub Actions sin exponer el token del Space.
+- El deploy del backend es automático **una vez conectado** el Blueprint en el dashboard de Render
+  (Fase 2, paso 1) — Render vigila el repo directamente, no pasa por GitHub Actions.
 
 ### Fase 4 — Pruebas ✅
 - **Frontend** (`npx ng test`, Vitest): `theme.service`, `i18n.service`, `footer.component`,
@@ -101,11 +103,11 @@ pueden automatizar sin tus credenciales de Hugging Face):
   Performance 0.95, Accessibility 1.0, Best Practices 1.0, SEO 1.0.
 - **Presupuestos de bundle** (`angular.json`): 500kB warning / 1MB error en el bundle inicial;
   4kB/8kB por estilos de componente. El chunk del chatbot (lazy, ~457kB) no cuenta contra el inicial.
-- **Backend** (checklist manual post-deploy, no automatizado — depende del Space real):
+- **Backend** (checklist manual post-deploy, no automatizado — depende del servicio real en Render):
   - PDF de 50 páginas procesado en < 30s
-  - Cold start del Space (free tier duerme tras inactividad) ≈ 30s — limitación conocida del plan
-    gratuito de HF Spaces, no algo que se "arregle"; si molesta, considerar un ping periódico desde
-    el frontend cuando el usuario esté en `/chatbot`.
+  - Cold start (free tier de Render duerme tras ~15 min de inactividad) ≈ 30-60s — limitación conocida
+    del hosting gratuito, no algo que se "arregle"; si molesta, considerar un ping periódico desde el
+    frontend cuando el usuario esté en `/chatbot`.
   - `GET /health` responde 200 con el conteo de sesiones activas.
 
 ### Fase 6 — Documentación y agentes ✅
