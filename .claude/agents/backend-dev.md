@@ -22,9 +22,17 @@ Reglas de este proyecto:
   `allow_origins=["*"]`, eso ya fue un bug corregido.
 - El cliente de Groq (`rag_tools.py`) se inicializa a nivel de módulo con `os.getenv("GROQ_API_KEY", "")`
   — en tests, siempre mockea `rag_tools.client.chat.completions.create`, nunca pegues a la API real.
-- `tests/conftest.py` reemplaza `sentence_transformers` por un embedder falso antes de cualquier import
-  de `session_manager.py` — no elimines eso ni lo evadas importando directamente el paquete real en un test,
-  o los tests empezarán a descargar un modelo de ~90MB y a depender de red.
+- `tests/conftest.py` reemplaza `fastembed` por un embedder falso antes de cualquier import de
+  `session_manager.py` — no elimines eso ni lo evadas importando directamente el paquete real en un test,
+  o los tests empezarán a descargar un modelo real y a depender de red.
+- **No sueltes el pin `mcp[cli]>=1.29.0,<2.0.0`** sin antes verificar que `server.py` sigue funcionando:
+  `mcp` 2.0.0 eliminó los decoradores `@app.list_tools()`/`@app.call_tool()` que usa este código (rompió
+  el primer deploy a producción). `tests/test_server.py` importa `server.py` de verdad — corre esa suite
+  después de tocar la versión de `mcp`, no solo los tests de `session_manager`/`rag_tools`/`pdf_tools`.
+- **No reintroduzcas `sentence-transformers`/PyTorch.** Se cambió a `fastembed` (ONNX Runtime) porque
+  PyTorch por sí solo ya excede los 512MB del free tier de Render — cualquier dependencia nueva que
+  pese mucho debe medirse primero (`resource.getrusage(...).ru_maxrss` tras importarla) antes de asumir
+  que cabe.
 - Después de cualquier cambio: `source .venv/bin/activate && pytest -v` (crea el venv con
   `python3 -m venv .venv && pip install -r requirements-dev.txt` si no existe).
 - El deploy a Render se conecta una sola vez desde el dashboard de Render (Blueprint sobre
