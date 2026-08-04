@@ -227,6 +227,34 @@ export const CV_DATA: CvData = {
       date: '2026',
     },
     {
+      id: 'patitas-a-la-obra',
+      title: 'Patitas a la Obra',
+      description:
+        'PWA de remodelación de interiores con chatbot IA (Mily): visión on-device y RAG contra inventario real vía arquitectura MCP.',
+      longDescription:
+        'Sube una foto de tu espacio y la app segmenta la imagen on-device, recomienda materiales reales de un catálogo vía RAG, y genera previews con IA generativa (Gemini) del resultado. Incluye agendamiento de citas con notificaciones automáticas por Telegram y email.',
+      tags: ['Angular 19', 'Supabase', 'MCP', 'Hugging Face Transformers', 'RAG', 'Gemini', 'PWA'],
+      category: 'ai-ml',
+      status: 'live',
+      featured: true,
+      demo: 'https://patitas-a-la-obra.vercel.app',
+      date: '2026',
+    },
+    {
+      id: 'caza-casas',
+      title: 'Mily Caza Casas',
+      description:
+        'PWA gratuita para buscar arriendos en Bogotá: scraping diario automatizado + alta manual, notificaciones por Telegram y filtros pet-friendly.',
+      longDescription:
+        'Monorepo con frontend Angular, un scraper con Playwright que corre a diario vía GitHub Actions, y backend en Supabase (Postgres, Auth, Edge Functions). Dashboard con anuncios nuevos del día, favoritos, mapa y notificaciones automáticas por Telegram.',
+      tags: ['Angular', 'Supabase', 'Playwright', 'Tailwind CSS', 'GitHub Actions', 'PWA'],
+      category: 'fullstack',
+      status: 'live',
+      featured: true,
+      demo: 'https://caza-casas.vercel.app',
+      date: '2026',
+    },
+    {
       id: 'rag-document-retrieval',
       title: 'RAG & Document Retrieval System',
       description:

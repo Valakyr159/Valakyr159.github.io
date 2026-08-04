@@ -13,6 +13,19 @@ test('navigating to /projects renders project cards', async ({ page }) => {
   await expect(page.locator('.project-card').first()).toBeVisible();
 });
 
+test('loading /projects directly reveals the cards (not stuck at opacity 0)', async ({ page }) => {
+  // Regression test: ProjectsComponent used to have no IntersectionObserver
+  // of its own for its `.reveal` elements — it relied on one HomeComponent
+  // set up, so the whole page stayed at opacity:0 forever on a direct load
+  // or a hard navigation. `toBeVisible()` alone doesn't catch this since
+  // Playwright doesn't treat opacity:0 as invisible, hence the explicit
+  // opacity check below.
+  await page.goto('/projects');
+  const firstCardWrapper = page.locator('.reveal').filter({ has: page.locator('.project-card') }).first();
+  await expect(firstCardWrapper).toHaveClass(/visible/);
+  await expect(firstCardWrapper).toHaveCSS('opacity', '1');
+});
+
 test('chatbot page loads and shows a connection status badge', async ({ page }) => {
   await page.goto('/chatbot');
   await expect(

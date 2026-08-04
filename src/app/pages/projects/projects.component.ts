@@ -1,4 +1,4 @@
-import { Component, signal } from '@angular/core';
+import { Component, signal, AfterViewInit, OnDestroy } from '@angular/core';
 import { CV_DATA, Project } from '../../core/data/cv-data';
 import { ProjectCardComponent } from './components/project-card/project-card.component';
 
@@ -53,7 +53,7 @@ import { ProjectCardComponent } from './components/project-card/project-card.com
     </div>
   `
 })
-export class ProjectsComponent {
+export class ProjectsComponent implements AfterViewInit, OnDestroy {
   projects = CV_DATA.projects;
   activeFilter = signal<string>('all');
 
@@ -68,5 +68,33 @@ export class ProjectsComponent {
     const filter = this.activeFilter();
     if (filter === 'all') return this.projects;
     return this.projects.filter((p: Project) => p.category === filter);
+  }
+
+  // Same reveal-on-scroll setup as HomeComponent — this route mounts on its
+  // own (direct load or nav from Home), so it needs its own observer instead
+  // of relying on one set up elsewhere.
+  private observer: IntersectionObserver | null = null;
+
+  ngAfterViewInit(): void {
+    this.observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+        }
+      });
+    }, {
+      root: null,
+      rootMargin: '0px',
+      threshold: 0.1
+    });
+
+    setTimeout(() => {
+      document.querySelectorAll('.reveal, .reveal-left, .reveal-right')
+        .forEach(el => this.observer?.observe(el));
+    }, 100);
+  }
+
+  ngOnDestroy(): void {
+    this.observer?.disconnect();
   }
 }
