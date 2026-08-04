@@ -7,10 +7,9 @@
 ## Estado
 
 ✅ Publicado en **https://valakyr159.github.io**
-✅ Chatbot RAG funcional (arquitectura MCP) — backend listo para desplegar, pendiente de que conectes
-   tu cuenta de GitHub a Render y crees el servicio (requiere tu cuenta, ver Fase 2)
-✅ CI (build + tests + Lighthouse + e2e) y CD (deploy automático) en GitHub Actions
-✅ 27 tests de frontend (Vitest), 15 de backend (pytest), 4 e2e (Playwright)
+✅ Backend desplegado en Render: **https://personalwebsite-backend-kc07.onrender.com** (`/health` → 200)
+✅ CI (build + tests + Lighthouse + e2e) y CD (deploy automático) en GitHub Actions, en ambos repos
+✅ 27 tests de frontend (Vitest), 18 de backend (pytest), 4 e2e (Playwright)
 ⬜ Contenido real de "Proyectos" (integrar apps construidas junto con Claude) — deliberadamente
    pospuesto, ver [Roadmap](#roadmap-pendiente-después-del-lanzamiento)
 
@@ -61,24 +60,26 @@ Se renombró a `valakyr159-portfolio-2024-archive` para liberar el nombre, y est
 (`PersonalWebsite` → `Valakyr159.github.io`) tomó su lugar. `ng deploy` ya no necesita `--base-href`
 (el default `/` es correcto en la raíz del dominio).
 
-### Fase 2 — Backend en Render ⬜ (requiere tu cuenta)
-Código listo en `../PersonalWebsite-backend` (también en GitHub como
-[`Valakyr159/PersonalWebsite-backend`](https://github.com/Valakyr159/PersonalWebsite-backend), con CI en
-verde), con CORS restringido vía `ALLOWED_ORIGINS`, ruta `/health`, límite de tamaño de PDF vía
-`MAX_PDF_SIZE_MB`, y un `render.yaml` (Blueprint) listo para que Render lo detecte solo. Pasos manuales
-pendientes (no se pueden automatizar sin tu cuenta de Render):
-1. En https://dashboard.render.com → **New** → **Blueprint** → conectar tu cuenta de GitHub y elegir el
-   repo `Valakyr159/PersonalWebsite-backend`. Render lee `render.yaml` y crea el servicio solo (plan
-   free, Docker, healthcheck en `/health`).
-2. En la pestaña "Environment" del servicio, añadir el secret `GROQ_API_KEY` (consíguela en
-   https://console.groq.com) — `ALLOWED_ORIGINS` ya viene fijado a `https://valakyr159.github.io` desde
-   `render.yaml`.
-3. Una vez el servicio esté arriba, copiar su URL (`https://<nombre-del-servicio>.onrender.com`),
-   actualizar `src/environments/environment.prod.ts` en este repo con esa URL y redesplegar
-   (`git push` a `main`, el workflow de deploy se encarga solo).
-4. Después del primer deploy, cada push a `main` en el repo del backend redespliega solo — Render vigila
-   el repo (a diferencia de Hugging Face Spaces, que se descartó porque su plan gratis ya no incluye
-   Docker).
+### Fase 2 — Backend en Render ✅
+Desplegado en **https://personalwebsite-backend-kc07.onrender.com** (Blueprint sobre `render.yaml`,
+[`Valakyr159/PersonalWebsite-backend`](https://github.com/Valakyr159/PersonalWebsite-backend)). El
+primer deploy falló dos veces seguidas antes de quedar arriba — ambos incidentes documentados en el
+`CLAUDE.md` del backend, resumen aquí porque son relevantes para cualquier cambio futuro de dependencias:
+
+1. **OOM ("Ran out of memory, used over 512MB")**: `sentence-transformers` arrastra PyTorch, que por sí
+   solo ya excede el límite del free tier de Render antes de procesar un solo request. Se reemplazó por
+   `fastembed` (ONNX Runtime, sin PyTorch, modelo `BAAI/bge-small-en-v1.5`, `threads=1` para no dejar que
+   onnxruntime dimensione su arena de memoria según los cores del host). Pico de memoria medido tras un
+   embed real: ~340MB.
+2. **`AttributeError` en el import de `server.py`**: el requirement `mcp[cli]>=1.0.0` (sin techo) resolvió
+   a `mcp` 2.0.0 en el build de Render, que eliminó los decoradores `@app.list_tools()`/`@app.call_tool()`
+   sobre los que está escrito este backend. Se pineó a `mcp[cli]>=1.29.0,<2.0.0` (última línea 1.x) y se
+   añadió `tests/test_server.py`, que importa `server.py` de verdad — ningún otro test lo hacía, así que
+   este tipo de rotura era invisible para CI.
+
+CORS restringido vía `ALLOWED_ORIGINS`, ruta `/health`, límite de tamaño de PDF vía `MAX_PDF_SIZE_MB`.
+Cada push a `main` en el repo del backend redespliega solo — Render vigila el repo directamente (a
+diferencia de Hugging Face Spaces, que se descartó porque su plan gratis ya no incluye Docker).
 
 ### Fase 3 — CI/CD ✅
 - `.github/workflows/ci.yml` (este repo): build + `ng test` + Lighthouse CI + Playwright e2e en cada PR/push.

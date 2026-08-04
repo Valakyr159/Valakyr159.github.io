@@ -1,4 +1,4 @@
 export const environment = {
   production: true,
-  apiUrl: 'https://personalwebsite-backend.onrender.com' // TODO: confirmar el nombre real una vez creado el servicio en Render (Plan.md, Fase 2)
+  apiUrl: 'https://personalwebsite-backend-kc07.onrender.com'
 };
