@@ -59,7 +59,9 @@ Se renombró a `valakyr159-portfolio-2024-archive` para liberar el nombre, y est
 (el default `/` es correcto en la raíz del dominio).
 
 ### Fase 2 — Backend en Hugging Face Spaces ⬜ (requiere tu cuenta de HF)
-Código listo en `../PersonalWebsite-backend` (commiteado, con CORS restringido vía `ALLOWED_ORIGINS`,
+Código listo en `../PersonalWebsite-backend` (también en GitHub como
+[`Valakyr159/PersonalWebsite-backend`](https://github.com/Valakyr159/PersonalWebsite-backend), con CI en
+verde), con CORS restringido vía `ALLOWED_ORIGINS`,
 ruta `/health`, y límite de tamaño de PDF vía `MAX_PDF_SIZE_MB`). Pasos manuales pendientes (no se
 pueden automatizar sin tus credenciales de Hugging Face):
 1. Crear una cuenta/Space en https://huggingface.co/new-space — tipo **Docker**, hardware CPU básico, público.
