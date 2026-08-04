@@ -56,6 +56,7 @@ export interface Project {
   route?: string;
   github?: string;
   demo?: string;
+  image?: string;
   date: string;
 }
 
@@ -227,20 +228,6 @@ export const CV_DATA: CvData = {
       date: '2026',
     },
     {
-      id: 'patitas-a-la-obra',
-      title: 'Patitas a la Obra',
-      description:
-        'PWA de remodelación de interiores con chatbot IA (Mily): visión on-device y RAG contra inventario real vía arquitectura MCP.',
-      longDescription:
-        'Sube una foto de tu espacio y la app segmenta la imagen on-device, recomienda materiales reales de un catálogo vía RAG, y genera previews con IA generativa (Gemini) del resultado. Incluye agendamiento de citas con notificaciones automáticas por Telegram y email.',
-      tags: ['Angular 19', 'Supabase', 'MCP', 'Hugging Face Transformers', 'RAG', 'Gemini', 'PWA'],
-      category: 'ai-ml',
-      status: 'live',
-      featured: true,
-      demo: 'https://patitas-a-la-obra.vercel.app',
-      date: '2026',
-    },
-    {
       id: 'caza-casas',
       title: 'Mily Caza Casas',
       description:
@@ -252,42 +239,48 @@ export const CV_DATA: CvData = {
       status: 'live',
       featured: true,
       demo: 'https://caza-casas.vercel.app',
+      image: '/project-shots/caza-casas.png',
       date: '2026',
     },
     {
-      id: 'rag-document-retrieval',
-      title: 'RAG & Document Retrieval System',
+      id: 'patitas-a-la-obra',
+      title: 'Patitas a la Obra',
       description:
-        'Pipeline end-to-end de Retrieval-Augmented Generation con LangChain para consulta de repositorios documentales.',
-      tags: ['LangChain', 'Python', 'RAG', 'Embeddings', 'Vector DBs'],
+        'PWA de remodelación de interiores con chatbot IA (Mily): visión on-device y RAG contra inventario real vía arquitectura MCP.',
+      longDescription:
+        'Sube una foto de tu espacio y la app segmenta la imagen on-device, recomienda materiales reales de un catálogo vía RAG, y genera previews con IA generativa (Gemini) del resultado. Incluye agendamiento de citas con notificaciones automáticas por Telegram y email.',
+      tags: ['Angular 19', 'Supabase', 'MCP', 'Hugging Face Transformers', 'RAG', 'Gemini', 'PWA'],
       category: 'ai-ml',
-      status: 'completed',
-      featured: false,
-      github: 'https://github.com/valakyr159',
-      date: '2025',
+      status: 'live',
+      featured: true,
+      demo: 'https://patitas-a-la-obra.vercel.app',
+      image: '/project-shots/patitas-a-la-obra.png',
+      date: '2026',
     },
     {
-      id: 'llm-api-integration',
-      title: 'LLM API Integration & Benchmarking',
-      description:
-        'Configuración y benchmarking de APIs LLM comerciales y open-source con Prompt Engineering avanzado para outputs estructurados.',
-      tags: ['Python', 'LLM APIs', 'Prompt Engineering', 'Groq', 'OpenAI'],
-      category: 'ai-ml',
-      status: 'completed',
+      id: 'bares-rock',
+      title: 'Bares Rock',
+      description: 'Próximamente.',
+      tags: [],
+      category: 'fullstack',
+      status: 'in-progress',
       featured: false,
-      github: 'https://github.com/valakyr159',
-      date: '2025',
+      date: '2026',
     },
     {
-      id: 'data-science-pipelines',
-      title: 'Data Science Pipelines',
+      id: 'netsuite-cert-prep',
+      title: 'NetSuite Cert Prep',
       description:
-        'Workflows de datos con Python, Pandas, NumPy y PostgreSQL. Entornos de modelos ML con Anaconda y Jupyter.',
-      tags: ['Python', 'Pandas', 'NumPy', 'PostgreSQL', 'Jupyter', 'Matplotlib'],
-      category: 'ai-ml',
-      status: 'completed',
+        'Simulador de examen para la certificación NetSuite SuiteFoundation, con temporizador, navegación entre preguntas y varios bancos de preguntas.',
+      longDescription:
+        'App Angular standalone que permite elegir un set de preguntas (varias fuentes), configurar si se muestran las respuestas al instante o al final, aleatorizar el orden, y hacer seguimiento del progreso con un temporizador circular y un panel de navegación de preguntas.',
+      tags: ['Angular 18', 'TypeScript', 'Tailwind CSS'],
+      category: 'frontend',
+      status: 'live',
       featured: false,
-      github: 'https://github.com/valakyr159',
+      github: 'https://github.com/valakyr159/netsuite-cert-prep',
+      demo: 'https://netsuite-cert-prep.vercel.app',
+      image: '/project-shots/netsuite-cert-prep.png',
       date: '2024',
     },
   ],

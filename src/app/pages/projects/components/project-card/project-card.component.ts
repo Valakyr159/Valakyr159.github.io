@@ -33,25 +33,31 @@ import { Project } from '../../../../core/data/cv-data';
 
       <!-- Banner -->
       <div class="h-48 w-full relative overflow-hidden flex items-center justify-center"
-           [style.background]="getBannerGradient(project.category)">
-        
-        <!-- Animated Shimmer for Featured -->
-        @if (project.featured) {
-          <div class="absolute inset-0 w-[200%] animate-[shimmer_2s_infinite] opacity-30"
-               style="background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent)"></div>
+           [style.background]="project.image ? null : getBannerGradient(project.category)">
+
+        @if (project.image) {
+          <img [src]="project.image" [alt]="project.title + ' — captura de pantalla'"
+               class="absolute inset-0 w-full h-full object-cover object-top">
+          <div class="absolute inset-0" style="background: linear-gradient(180deg, transparent 50%, rgba(0,0,0,0.35) 100%)"></div>
+        } @else {
+          <!-- Animated Shimmer for Featured -->
+          @if (project.featured) {
+            <div class="absolute inset-0 w-[200%] animate-[shimmer_2s_infinite] opacity-30"
+                 style="background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent)"></div>
+          }
+
+          <!-- Category Icon -->
+          <div class="relative z-10 w-16 h-16 rounded-2xl bg-white/10 backdrop-blur-md border border-white/20 flex items-center justify-center text-white shadow-xl">
+            <ng-container [ngSwitch]="project.category">
+              <!-- AI Icon -->
+              <svg *ngSwitchCase="'ai-ml'" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5a3 3 0 1 0-5.997.125 4 4 0 0 0-2.526 5.77 4 4 0 0 0 .556 6.588A4 4 0 1 0 12 18Z"/><path d="M12 5a3 3 0 1 1 5.997.125 4 4 0 0 1 2.526 5.77 4 4 0 0 1-.556 6.588A4 4 0 1 1 12 18Z"/><path d="M15 13a4.5 4.5 0 0 1-3-4 4.5 4.5 0 0 1-3 4"/><path d="M17.599 6.5a3 3 0 0 0 .399-1.375"/></svg>
+              <!-- Full Stack Icon -->
+              <svg *ngSwitchCase="'fullstack'" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>
+              <!-- Frontend Icon -->
+              <svg *ngSwitchCase="'frontend'" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><line x1="3" x2="21" y1="9" y2="9"/><line x1="9" x2="9" y1="21" y2="9"/></svg>
+            </ng-container>
+          </div>
         }
-        
-        <!-- Category Icon -->
-        <div class="relative z-10 w-16 h-16 rounded-2xl bg-white/10 backdrop-blur-md border border-white/20 flex items-center justify-center text-white shadow-xl">
-          <ng-container [ngSwitch]="project.category">
-            <!-- AI Icon -->
-            <svg *ngSwitchCase="'ai-ml'" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5a3 3 0 1 0-5.997.125 4 4 0 0 0-2.526 5.77 4 4 0 0 0 .556 6.588A4 4 0 1 0 12 18Z"/><path d="M12 5a3 3 0 1 1 5.997.125 4 4 0 0 1 2.526 5.77 4 4 0 0 1-.556 6.588A4 4 0 1 1 12 18Z"/><path d="M15 13a4.5 4.5 0 0 1-3-4 4.5 4.5 0 0 1-3 4"/><path d="M17.599 6.5a3 3 0 0 0 .399-1.375"/></svg>
-            <!-- Full Stack Icon -->
-            <svg *ngSwitchCase="'fullstack'" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>
-            <!-- Frontend Icon -->
-            <svg *ngSwitchCase="'frontend'" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><line x1="3" x2="21" y1="9" y2="9"/><line x1="9" x2="9" y1="21" y2="9"/></svg>
-          </ng-container>
-        </div>
       </div>
 
       <!-- Content -->
@@ -111,8 +117,8 @@ import { Project } from '../../../../core/data/cv-data';
           <a [href]="project.demo" target="_blank" rel="noopener noreferrer"
              class="flex-1 inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg font-medium text-sm transition-colors hover:bg-white/5"
              style="color: var(--text-primary); border: 1px solid var(--border)">
-            Demo
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/></svg>
+            Abrir App
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
           </a>
         }
       </div>
