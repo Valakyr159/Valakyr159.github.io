@@ -1,6 +1,5 @@
 export interface CvData {
   personal: PersonalInfo;
-  summary: string;
   skills: SkillCategory[];
   experience: Experience[];
   education: Education[];
@@ -34,7 +33,6 @@ export interface Experience {
   company: string;
   role: string;
   period: string;
-  highlights: string[];
   tags: string[];
 }
 
@@ -75,9 +73,6 @@ export const CV_DATA: CvData = {
     role: 'Full Stack Software Engineer & Machine Learning Engineer',
     englishLevel: 'C1 Advanced',
   },
-
-  summary:
-    'Full Stack Software Engineer and Machine Learning Engineer with hands-on experience in NetSuite ERP development, web integrations, and AI/ML systems. Proficient in Angular, Node.js, TypeScript, Python, and SuiteScript. Skilled in LLM orchestration, RAG pipelines, and AI Agents. Experienced delivering LATAM financial compliance solutions in Agile/Scrum global teams.',
 
   typewriterRoles: [
     'Full Stack Engineer',
@@ -180,13 +175,6 @@ export const CV_DATA: CvData = {
       company: 'Bring IT',
       role: 'NetSuite Software Engineer',
       period: 'Sep 2024 – Apr 2026',
-      highlights: [
-        "Selected for the 'Make Your Mark' program focused on NetSuite ERP architecture and cloud systems.",
-        'Architected integrations using Angular, Node.js, and PostgreSQL bridging ERP data with external business applications.',
-        'Engineered financial localization reporting engines for LATAM regulatory compliance: Exógenos (Colombia), SAT (Mexico), PLE (Peru).',
-        'Built and maintained complex server-side business logic using JavaScript, TypeScript, and SuiteScript.',
-        'Collaborated in Agile/Scrum methodologies within cross-functional, international development teams.',
-      ],
       tags: ['Angular', 'Node.js', 'TypeScript', 'PostgreSQL', 'SuiteScript', 'Scrum'],
     },
     {
@@ -194,10 +182,6 @@ export const CV_DATA: CvData = {
       company: 'Sutherland',
       role: 'Customer Support Specialist',
       period: '2022 – 2024',
-      highlights: [
-        'Delivered high-tier bilingual technical support with strong SLA compliance.',
-        'Strengthened cross-cultural communication and structured problem-solving skills.',
-      ],
       tags: ['Technical Support', 'Bilingual', 'SLA', 'Problem Solving'],
     },
   ],

@@ -36,7 +36,7 @@ const translations = {
     about: {
       title: 'About me',
       p1: 'Full Stack Software Engineer and Machine Learning Engineer with hands-on experience in NetSuite ERP development, web integrations, and AI/ML systems. Proficient in Angular, Node.js, TypeScript, Python, and SuiteScript.',
-      p2: 'Skilled in LLM orchestration, RAG pipelines, and AI Agents. Experienced delivering LATAM financial compliance solutions in Agile/Scrum global teams.',
+      p2: 'Skilled in LLM orchestration, RAG pipelines, and AI Agents. Experienced delivering LATAM financial compliance solutions and internal engineering tools in Agile/Scrum global teams. Advanced English (C1).',
       stats: {
         years: 'Years Exp.',
         tech: 'Technologies',
@@ -61,6 +61,8 @@ const translations = {
         bringit: {
           highlights: [
             "Selected for the 'Make Your Mark' program focused on NetSuite ERP architecture and cloud systems.",
+            "Automated Exógenos regulatory reporting by building an end-to-end synchronization system between NetSuite's native database and an external PostgreSQL database, then delivered an embedded Angular application that lets finance users generate compliant reports on demand — eliminating a manual, error-prone process.",
+            'Built an internal automated testing platform for QA: a second embedded Angular tool that lets the QA team create, manage, and run their own regression test suites against SuiteScript customizations, reducing the risk of production regressions.',
             'Architected integrations using Angular, Node.js, and PostgreSQL bridging ERP data with external business applications.',
             'Engineered financial localization reporting engines for LATAM regulatory compliance: Exógenos (Colombia), SAT (Mexico), PLE (Peru).',
             'Built and maintained complex server-side business logic using JavaScript, TypeScript, and SuiteScript.',
@@ -183,7 +185,7 @@ const translations = {
     about: {
       title: 'Sobre mí',
       p1: 'Full Stack Software Engineer y Machine Learning Engineer con experiencia práctica en desarrollo ERP en NetSuite, integraciones web y sistemas de IA/ML. Competente en Angular, Node.js, TypeScript, Python y SuiteScript.',
-      p2: 'Habilidades en orquestación de LLMs, pipelines RAG y Agentes de IA. Experiencia entregando soluciones de cumplimiento financiero para LATAM en equipos globales Ágiles/Scrum.',
+      p2: 'Habilidades en orquestación de LLMs, pipelines RAG y Agentes de IA. Experiencia entregando soluciones de cumplimiento financiero y herramientas internas de ingeniería para LATAM en equipos globales Ágiles/Scrum. Inglés avanzado (C1).',
       stats: {
         years: 'Años Exp.',
         tech: 'Tecnologías',
@@ -208,6 +210,8 @@ const translations = {
         bringit: {
           highlights: [
             "Seleccionado para el programa 'Make Your Mark' enfocado en arquitectura ERP NetSuite y sistemas cloud.",
+            'Automatización del reporte regulatorio de Exógenos: diseñé y construí un sistema de sincronización end-to-end entre la base de datos nativa de NetSuite y una base de datos externa en PostgreSQL, y entregué una aplicación Angular embebida que permite a los usuarios de finanzas generar reportes conformes bajo demanda, eliminando un proceso manual y propenso a errores.',
+            'Construcción de una plataforma interna de pruebas automatizadas para QA: una segunda herramienta Angular embebida que permite al equipo de QA crear, gestionar y ejecutar sus propias suites de pruebas de regresión sobre las personalizaciones de SuiteScript, reduciendo el riesgo de regresiones en producción.',
             'Diseño de integraciones usando Angular, Node.js y PostgreSQL conectando datos del ERP con aplicaciones de negocio externas.',
             'Desarrollo de motores de reportes de localización financiera para LATAM: Exógenos (Colombia), SAT (México), PLE (Perú).',
             'Construcción y mantenimiento de lógica de negocio del lado del servidor usando JavaScript, TypeScript y SuiteScript.',
@@ -330,7 +334,7 @@ const translations = {
     about: {
       title: 'Sobre mim',
       p1: 'Full Stack Software Engineer e Machine Learning Engineer com experiência prática em desenvolvimento de ERP NetSuite, integrações web e sistemas de IA/ML. Proficiente em Angular, Node.js, TypeScript, Python e SuiteScript.',
-      p2: 'Experiência em orquestração de LLMs, pipelines RAG e Agentes de IA. Experiência entregando soluções de conformidade financeira para a América Latina em equipes globais Agile/Scrum.',
+      p2: 'Experiência em orquestração de LLMs, pipelines RAG e Agentes de IA. Experiência entregando soluções de conformidade financeira e ferramentas internas de engenharia para a América Latina em equipes globais Agile/Scrum. Inglês avançado (C1).',
       stats: {
         years: 'Anos Exp.',
         tech: 'Tecnologias',
@@ -355,6 +359,8 @@ const translations = {
         bringit: {
           highlights: [
             "Selecionado para o programa 'Make Your Mark', focado em arquitetura ERP NetSuite e sistemas em nuvem.",
+            'Automatização do relatório regulatório Exógenos: projetei e construí um sistema de sincronização end-to-end entre o banco de dados nativo do NetSuite e um banco de dados externo em PostgreSQL, e entreguei uma aplicação Angular embutida que permite à equipe financeira gerar relatórios em conformidade sob demanda, eliminando um processo manual e propenso a erros.',
+            'Construção de uma plataforma interna de testes automatizados para QA: uma segunda ferramenta Angular embutida que permite à equipe de QA criar, gerenciar e executar suas próprias suítes de testes de regressão sobre as personalizações do SuiteScript, reduzindo o risco de regressões em produção.',
             'Arquitetou integrações usando Angular, Node.js e PostgreSQL conectando dados do ERP com aplicações de negócio externas.',
             'Desenvolveu motores de relatórios de localização financeira para conformidade regulatória na América Latina: Exógenos (Colômbia), SAT (México), PLE (Peru).',
             'Construiu e manteve lógica de negócio complexa no lado do servidor usando JavaScript, TypeScript e SuiteScript.',
