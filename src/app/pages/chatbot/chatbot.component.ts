@@ -168,8 +168,8 @@ import { I18nService } from '../../core/services/i18n.service';
             
             <div class="text-center mt-2 text-[10px]" style="color: var(--text-muted)">
               <span *ngIf="!mcp.isConnected()">{{ i18n.t().chatbot.connectingText }}</span>
-              <span *ngIf="mcp.isConnected() && !mcp.pdfUploaded()">Sube un PDF primero para empezar a preguntar.</span>
-              <span *ngIf="mcp.pdfUploaded()">Presiona Enter para enviar, Shift+Enter para nueva línea.</span>
+              <span *ngIf="mcp.isConnected() && !mcp.pdfUploaded()">{{ i18n.t().chatbot.uploadFirstHint }}</span>
+              <span *ngIf="mcp.pdfUploaded()">{{ i18n.t().chatbot.enterHint }}</span>
             </div>
           </div>
         </div>
@@ -193,7 +193,7 @@ export class ChatbotComponent implements AfterViewChecked {
 
   onFileSelected(file: File) {
     this.mcp.uploadPdf(file).catch(() => {
-      alert('Error al subir el archivo. Asegúrate de que el backend esté ejecutándose.');
+      alert(this.i18n.t().chatbot.uploadError);
     });
   }
 
@@ -225,7 +225,7 @@ export class ChatbotComponent implements AfterViewChecked {
   }
 
   resetSession() {
-    if (confirm('¿Estás seguro de que deseas limpiar la sesión actual? Se borrará el PDF y el historial de chat.')) {
+    if (confirm(this.i18n.t().chatbot.confirmClear)) {
       this.mcp.clearSession();
     }
   }

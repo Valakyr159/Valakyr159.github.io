@@ -1,5 +1,6 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { CV_DATA } from '../../../core/data/cv-data';
+import { I18nService } from '../../../core/services/i18n.service';
 
 @Component({
   selector: 'app-footer',
@@ -8,7 +9,7 @@ import { CV_DATA } from '../../../core/data/cv-data';
     <footer class="py-8 mt-20 border-t" style="border-color: var(--border); background-color: var(--bg-surface)">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between gap-4">
         <div class="text-sm" style="color: var(--text-secondary)">
-          © {{ currentYear }} {{ name }}. Todos los derechos reservados.
+          © {{ currentYear }} {{ name }}. {{ i18n.t().footer.rights }}
         </div>
         
         <div class="flex gap-4">
@@ -35,6 +36,7 @@ import { CV_DATA } from '../../../core/data/cv-data';
   `]
 })
 export class FooterComponent {
+  i18n = inject(I18nService);
   currentYear = new Date().getFullYear();
   name = CV_DATA.personal.fullName;
   github = CV_DATA.personal.github;

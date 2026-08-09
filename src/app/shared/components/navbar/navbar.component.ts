@@ -62,15 +62,26 @@ import { CV_DATA } from '../../../core/data/cv-data';
 
             <div class="h-6 w-px bg-gray-300 dark:bg-gray-700 mx-2"></div>
 
-            <!-- Language toggle -->
-            <button
-              (click)="i18n.toggle()"
-              class="w-10 h-10 rounded-full flex items-center justify-center transition-all duration-200 hover:scale-110 font-medium text-xs"
-              style="background: var(--bg-elevated); border: 1px solid var(--border); color: var(--text-primary)"
-              [attr.aria-label]="i18n.t().nav.switchLang"
+            <!-- Language selector -->
+            <div
+              class="flex items-center rounded-full p-0.5 gap-0.5"
+              style="background: var(--bg-elevated); border: 1px solid var(--border)"
+              role="group"
+              [attr.aria-label]="i18n.t().nav.language"
             >
-              {{ i18n.t().nav.langCode }}
-            </button>
+              @for (lang of i18n.languages; track lang.code) {
+                <button
+                  (click)="i18n.setLang(lang.code)"
+                  class="px-2.5 h-8 rounded-full flex items-center justify-center transition-all duration-200 font-medium text-xs"
+                  [style.background]="i18n.currentLang() === lang.code ? 'var(--accent-gradient)' : 'transparent'"
+                  [style.color]="i18n.currentLang() === lang.code ? 'white' : 'var(--text-secondary)'"
+                  [attr.aria-label]="lang.name"
+                  [attr.aria-pressed]="i18n.currentLang() === lang.code"
+                >
+                  {{ lang.label }}
+                </button>
+              }
+            </div>
 
             <!-- Theme toggle -->
             <button
@@ -90,15 +101,26 @@ import { CV_DATA } from '../../../core/data/cv-data';
 
           <!-- Mobile: toggles + hamburger -->
           <div class="flex items-center gap-2 md:hidden">
-            <!-- Language toggle -->
-            <button
-              (click)="i18n.toggle()"
-              class="w-9 h-9 rounded-full flex items-center justify-center font-medium text-xs"
-              style="background: var(--bg-elevated); border: 1px solid var(--border); color: var(--text-primary)"
-              [attr.aria-label]="i18n.t().nav.switchLang"
+            <!-- Language selector -->
+            <div
+              class="flex items-center rounded-full p-0.5 gap-0.5"
+              style="background: var(--bg-elevated); border: 1px solid var(--border)"
+              role="group"
+              [attr.aria-label]="i18n.t().nav.language"
             >
-              {{ i18n.t().nav.langCode }}
-            </button>
+              @for (lang of i18n.languages; track lang.code) {
+                <button
+                  (click)="i18n.setLang(lang.code)"
+                  class="px-2 h-7 rounded-full flex items-center justify-center font-medium text-[11px]"
+                  [style.background]="i18n.currentLang() === lang.code ? 'var(--accent-gradient)' : 'transparent'"
+                  [style.color]="i18n.currentLang() === lang.code ? 'white' : 'var(--text-secondary)'"
+                  [attr.aria-label]="lang.name"
+                  [attr.aria-pressed]="i18n.currentLang() === lang.code"
+                >
+                  {{ lang.label }}
+                </button>
+              }
+            </div>
 
             <!-- Theme toggle -->
             <button

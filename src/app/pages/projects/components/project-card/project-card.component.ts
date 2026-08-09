@@ -1,33 +1,35 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { Project } from '../../../../core/data/cv-data';
+import { I18nService } from '../../../../core/services/i18n.service';
+import { TechIconComponent } from '../../../../shared/components/tech-icon/tech-icon.component';
 
 @Component({
   selector: 'app-project-card',
   standalone: true,
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule, RouterLink, TechIconComponent],
   template: `
     <div class="project-card glass h-full flex flex-col"
          [class.md:col-span-2]="project.featured">
-      
+
       <!-- Card Header: Status & Date -->
       <div class="flex items-center justify-between p-5 border-b" style="border-color: var(--border)">
         @if (project.status === 'live') {
           <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium border border-green-500/30 bg-green-500/10 text-green-400">
             <span class="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse"></span>
-            En vivo
+            {{ i18n.t().projects.live }}
           </span>
         } @else if (project.status === 'completed') {
           <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium border border-blue-500/30 bg-blue-500/10 text-blue-400">
-            Completado <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+            {{ i18n.t().projects.completed }} <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
           </span>
         } @else {
           <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium border border-amber-500/30 bg-amber-500/10 text-amber-400">
-            En desarrollo
+            {{ i18n.t().projects.inProgress }}
           </span>
         }
-        
+
         <span class="text-sm font-mono" style="color: var(--text-muted)">{{ project.date }}</span>
       </div>
 
@@ -36,7 +38,7 @@ import { Project } from '../../../../core/data/cv-data';
            [style.background]="project.image ? null : getBannerGradient(project.category)">
 
         @if (project.image) {
-          <img [src]="project.image" [alt]="project.title + ' — captura de pantalla'"
+          <img [src]="project.image" [alt]="title() + ' — ' + i18n.t().projects.screenshotAlt"
                class="absolute inset-0 w-full h-full object-cover object-top">
           <div class="absolute inset-0" style="background: linear-gradient(180deg, transparent 50%, rgba(0,0,0,0.35) 100%)"></div>
         } @else {
@@ -63,24 +65,25 @@ import { Project } from '../../../../core/data/cv-data';
       <!-- Content -->
       <div class="p-6 flex-1 flex flex-col">
         <div class="flex items-start justify-between gap-4 mb-3">
-          <h3 class="font-display font-bold text-xl leading-tight">{{ project.title }}</h3>
+          <h3 class="font-display font-bold text-xl leading-tight">{{ title() }}</h3>
           @if (project.featured) {
             <span class="shrink-0 px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider bg-white/10 text-white shadow-sm"
                   style="background: var(--accent-gradient)">
-              ⚡ Destacado
+              ⚡ {{ i18n.t().projects.featured }}
             </span>
           }
         </div>
-        
+
         <p class="font-body text-sm leading-relaxed mb-6" style="color: var(--text-secondary)">
-          {{ project.description }}
+          {{ description() }}
         </p>
 
         <!-- Tags -->
         <div class="flex flex-wrap gap-2 mt-auto pt-4 border-t" style="border-color: var(--border)">
           @for (tag of project.tags.slice(0, 4); track tag) {
-            <span class="text-xs font-mono px-2.5 py-1 rounded-md"
+            <span class="text-xs font-mono px-2.5 py-1 rounded-md inline-flex items-center gap-1.5"
                   style="background: rgba(255,255,255,0.03); border: 1px solid var(--border); color: var(--text-muted)">
+              <app-tech-icon [name]="tag" />
               {{ tag }}
             </span>
           }
@@ -99,7 +102,7 @@ import { Project } from '../../../../core/data/cv-data';
           <a [routerLink]="project.route" 
              class="flex-1 inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg text-white font-medium text-sm transition-all duration-300 hover:scale-[1.02]"
              style="background: var(--accent-gradient); box-shadow: var(--accent-glow)">
-            Abrir App
+            {{ i18n.t().projects.openApp }}
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
           </a>
         }
@@ -117,7 +120,7 @@ import { Project } from '../../../../core/data/cv-data';
           <a [href]="project.demo" target="_blank" rel="noopener noreferrer"
              class="flex-1 inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg font-medium text-sm transition-colors hover:bg-white/5"
              style="color: var(--text-primary); border: 1px solid var(--border)">
-            Abrir App
+            {{ i18n.t().projects.openApp }}
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
           </a>
         }
@@ -132,6 +135,15 @@ import { Project } from '../../../../core/data/cv-data';
 })
 export class ProjectCardComponent {
   @Input({ required: true }) project!: Project;
+  i18n = inject(I18nService);
+
+  title(): string {
+    return this.i18n.t().projects.items[this.project.id]?.title ?? this.project.title;
+  }
+
+  description(): string {
+    return this.i18n.t().projects.items[this.project.id]?.description ?? this.project.description;
+  }
 
   getBannerGradient(category: string): string {
     switch (category) {

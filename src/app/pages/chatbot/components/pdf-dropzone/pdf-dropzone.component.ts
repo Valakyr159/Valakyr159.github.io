@@ -1,4 +1,5 @@
-import { Component, EventEmitter, Output } from '@angular/core';
+import { Component, EventEmitter, Output, inject } from '@angular/core';
+import { I18nService } from '../../../../core/services/i18n.service';
 
 @Component({
   selector: 'app-pdf-dropzone',
@@ -26,16 +27,17 @@ import { Component, EventEmitter, Output } from '@angular/core';
       </div>
 
       <h3 class="font-display font-semibold text-lg mb-2" style="color: var(--text-primary)">
-        Sube un PDF
+        {{ i18n.t().chatbot.dropzoneTitle }}
       </h3>
       <p class="font-body text-sm text-center max-w-[200px]" style="color: var(--text-secondary)">
-        Arrastra y suelta aquí, o haz clic para seleccionar un archivo.
+        {{ i18n.t().chatbot.dropzoneDesc }}
       </p>
     </div>
   `
 })
 export class PdfDropzoneComponent {
   @Output() fileSelected = new EventEmitter<File>();
+  i18n = inject(I18nService);
   isDragging = false;
 
   onDragOver(event: DragEvent) {
@@ -57,7 +59,7 @@ export class PdfDropzoneComponent {
       if (file.type === 'application/pdf') {
         this.fileSelected.emit(file);
       } else {
-        alert('Por favor, sube únicamente archivos PDF.');
+        alert(this.i18n.t().chatbot.invalidFile);
       }
     }
   }

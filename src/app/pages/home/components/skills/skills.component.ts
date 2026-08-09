@@ -1,20 +1,22 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { CV_DATA } from '../../../../core/data/cv-data';
+import { I18nService } from '../../../../core/services/i18n.service';
+import { TechIconComponent } from '../../../../shared/components/tech-icon/tech-icon.component';
 
 @Component({
   selector: 'app-skills',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, TechIconComponent],
   template: `
     <section class="py-20 relative">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="text-center mb-16 reveal">
           <h2 class="font-display font-bold text-3xl sm:text-4xl mb-4">
-            Stack <span class="gradient-text">Técnico</span>
+            {{ i18n.t().skills.title }} <span class="gradient-text">{{ i18n.t().skills.titleHighlight }}</span>
           </h2>
           <p class="font-body text-lg max-w-2xl mx-auto" style="color: var(--text-secondary)">
-            Tecnologías y herramientas que utilizo para construir soluciones de nivel world-class.
+            {{ i18n.t().skills.subtitle }}
           </p>
         </div>
 
@@ -40,18 +42,19 @@ import { CV_DATA } from '../../../../core/data/cv-data';
                     <svg *ngSwitchDefault xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5V19A9 3 0 0 0 21 19V5"/><path d="M3 12A9 3 0 0 0 21 12"/></svg>
                   </ng-container>
                 </div>
-                <h3 class="font-display font-semibold text-xl">{{ category.name }}</h3>
+                <h3 class="font-display font-semibold text-xl">{{ i18n.t().skills[category.key] }}</h3>
               </div>
 
               <!-- Skills Chips -->
               <div class="flex flex-wrap gap-2">
                 @for (skill of category.skills; track skill) {
-                  <span class="px-3 py-1.5 rounded-lg text-xs font-mono font-medium transition-colors cursor-default"
+                  <span class="px-3 py-1.5 rounded-lg text-xs font-mono font-medium transition-colors cursor-default inline-flex items-center gap-1.5"
                         [style.background]="'rgba(255,255,255,0.03)'"
                         [style.border]="'1px solid var(--border)'"
                         [style.color]="'var(--text-primary)'"
                         onmouseover="this.style.borderColor='var(--accent-indigo)'"
                         onmouseout="this.style.borderColor='var(--border)'">
+                    <app-tech-icon [name]="skill" />
                     {{ skill }}
                   </span>
                 }
@@ -64,5 +67,6 @@ import { CV_DATA } from '../../../../core/data/cv-data';
   `
 })
 export class SkillsComponent {
+  i18n = inject(I18nService);
   skillCategories = CV_DATA.skills;
 }

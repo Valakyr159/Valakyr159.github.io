@@ -1,6 +1,7 @@
-import { Component, AfterViewInit, OnDestroy } from '@angular/core';
+import { Component, AfterViewInit, OnDestroy, inject } from '@angular/core';
 import { CV_DATA } from '../../core/data/cv-data';
 import { ProjectCardComponent } from './components/project-card/project-card.component';
+import { I18nService } from '../../core/services/i18n.service';
 
 @Component({
   selector: 'app-projects',
@@ -13,11 +14,10 @@ import { ProjectCardComponent } from './components/project-card/project-card.com
         <!-- Header -->
         <div class="max-w-3xl mb-16 reveal">
           <h1 class="font-display font-bold text-4xl sm:text-5xl mb-6">
-            Mis <span class="gradient-text">Proyectos</span>
+            {{ i18n.t().projects.pageTitle }} <span class="gradient-text">{{ i18n.t().projects.pageTitleHighlight }}</span>
           </h1>
           <p class="font-body text-lg sm:text-xl leading-relaxed" style="color: var(--text-secondary)">
-            Explora mi portfolio de proyectos. Desde arquitecturas cloud y automatizaciones
-            con IA, hasta interfaces de usuario modernas y optimizadas.
+            {{ i18n.t().projects.pageSubtitle }}
           </p>
         </div>
 
@@ -35,6 +35,7 @@ import { ProjectCardComponent } from './components/project-card/project-card.com
   `
 })
 export class ProjectsComponent implements AfterViewInit, OnDestroy {
+  i18n = inject(I18nService);
   projects = CV_DATA.projects;
 
   // Same reveal-on-scroll setup as HomeComponent — this route mounts on its

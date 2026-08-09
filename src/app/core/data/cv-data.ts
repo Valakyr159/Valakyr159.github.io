@@ -21,6 +21,7 @@ export interface PersonalInfo {
 }
 
 export interface SkillCategory {
+  key: 'frontend' | 'backend' | 'ai' | 'cloud' | 'db';
   name: string;
   colorClass: string;
   accentVar: string;
@@ -29,6 +30,7 @@ export interface SkillCategory {
 }
 
 export interface Experience {
+  id: 'bringit' | 'sutherland';
   company: string;
   role: string;
   period: string;
@@ -37,6 +39,7 @@ export interface Experience {
 }
 
 export interface Education {
+  id: 'sena' | 'platzi';
   institution: string;
   title: string;
   period: string;
@@ -85,6 +88,7 @@ export const CV_DATA: CvData = {
 
   skills: [
     {
+      key: 'frontend',
       name: 'Frontend',
       colorClass: 'accent-indigo',
       accentVar: '--accent-indigo',
@@ -101,6 +105,7 @@ export const CV_DATA: CvData = {
       ],
     },
     {
+      key: 'backend',
       name: 'Backend',
       colorClass: 'accent-violet',
       accentVar: '--accent-violet',
@@ -117,6 +122,7 @@ export const CV_DATA: CvData = {
       ],
     },
     {
+      key: 'ai',
       name: 'AI / ML',
       colorClass: 'accent-cyan',
       accentVar: '--accent-cyan',
@@ -133,6 +139,7 @@ export const CV_DATA: CvData = {
       ],
     },
     {
+      key: 'cloud',
       name: 'Cloud & DevOps',
       colorClass: 'accent-teal',
       accentVar: '--accent-cyan',
@@ -149,6 +156,7 @@ export const CV_DATA: CvData = {
       ],
     },
     {
+      key: 'db',
       name: 'Databases & Tools',
       colorClass: 'accent-slate',
       accentVar: '--accent-indigo',
@@ -168,6 +176,7 @@ export const CV_DATA: CvData = {
 
   experience: [
     {
+      id: 'bringit',
       company: 'Bring IT',
       role: 'NetSuite Software Engineer',
       period: 'Sep 2024 – Apr 2026',
@@ -181,6 +190,7 @@ export const CV_DATA: CvData = {
       tags: ['Angular', 'Node.js', 'TypeScript', 'PostgreSQL', 'SuiteScript', 'Scrum'],
     },
     {
+      id: 'sutherland',
       company: 'Sutherland',
       role: 'Customer Support Specialist',
       period: '2022 – 2024',
@@ -194,6 +204,7 @@ export const CV_DATA: CvData = {
 
   education: [
     {
+      id: 'sena',
       institution: 'SENA — Servicio Nacional de Aprendizaje',
       title: 'Software Analysis and Development Technologist',
       period: '2020 – 2022',
@@ -202,6 +213,7 @@ export const CV_DATA: CvData = {
         'Comprehensive program covering software analysis, development methodologies, databases, and programming fundamentals.',
     },
     {
+      id: 'platzi',
       institution: 'Platzi',
       title: 'Continuous Learning — 100+ Courses',
       period: '2019 – Present',
@@ -219,7 +231,7 @@ export const CV_DATA: CvData = {
         'Sube un PDF y conversa con él. RAG efímero con LlamaIndex + Groq streaming.',
       longDescription:
         'Sistema de chat con inteligencia artificial que permite subir documentos PDF y hacer preguntas sobre su contenido en tiempo real. Utiliza Retrieval-Augmented Generation (RAG) con vectores efímeros que se eliminan al cerrar la sesión, garantizando la privacidad del usuario.',
-      tags: ['Angular 19', 'FastAPI', 'LlamaIndex', 'Groq', 'PyMuPDF', 'SSE', 'Tailwind CSS'],
+      tags: ['Angular 19', 'FastAPI', 'MCP', 'LlamaIndex', 'Groq', 'PyMuPDF', 'SSE', 'Tailwind CSS'],
       category: 'ai-ml',
       status: 'live',
       featured: true,
@@ -234,7 +246,7 @@ export const CV_DATA: CvData = {
         'PWA gratuita para buscar arriendos en Bogotá: scraping diario automatizado + alta manual, notificaciones por Telegram y filtros pet-friendly.',
       longDescription:
         'Monorepo con frontend Angular, un scraper con Playwright que corre a diario vía GitHub Actions, y backend en Supabase (Postgres, Auth, Edge Functions). Dashboard con anuncios nuevos del día, favoritos, mapa y notificaciones automáticas por Telegram.',
-      tags: ['Angular', 'Supabase', 'Playwright', 'Tailwind CSS', 'GitHub Actions', 'PWA'],
+      tags: ['Angular', 'Supabase', 'Playwright', 'Gemini Flash 2.5', 'Telegram', 'Tailwind CSS', 'GitHub Actions', 'PWA'],
       category: 'fullstack',
       status: 'live',
       featured: true,
@@ -249,7 +261,7 @@ export const CV_DATA: CvData = {
         'PWA de remodelación de interiores con chatbot IA (Mily): visión on-device y RAG contra inventario real vía arquitectura MCP.',
       longDescription:
         'Sube una foto de tu espacio y la app segmenta la imagen on-device, recomienda materiales reales de un catálogo vía RAG, y genera previews con IA generativa (Gemini) del resultado. Incluye agendamiento de citas con notificaciones automáticas por Telegram y email.',
-      tags: ['Angular 19', 'Supabase', 'MCP', 'Hugging Face Transformers', 'RAG', 'Gemini', 'PWA'],
+      tags: ['Angular 19', 'Supabase', 'MCP', 'Hugging Face Transformers', 'RAG', 'Gemini', 'Telegram', 'PWA'],
       category: 'ai-ml',
       status: 'live',
       featured: true,

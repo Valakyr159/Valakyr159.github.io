@@ -31,11 +31,15 @@ describe('I18nService', () => {
     expect(service.currentLang()).toBe('en');
   });
 
-  it('toggle() switches between en and es and persists it', () => {
+  it('toggle() cycles en -> es -> pt -> en and persists it', () => {
     const service = TestBed.inject(I18nService);
     service.toggle();
     expect(service.currentLang()).toBe('es');
     expect(localStorage.getItem('lang')).toBe('es');
+
+    service.toggle();
+    expect(service.currentLang()).toBe('pt');
+    expect(localStorage.getItem('lang')).toBe('pt');
 
     service.toggle();
     expect(service.currentLang()).toBe('en');
@@ -46,5 +50,19 @@ describe('I18nService', () => {
     service.setLang('es');
     expect(service.currentLang()).toBe('es');
     expect(localStorage.getItem('lang')).toBe('es');
+  });
+
+  it('setLang() supports Portuguese', () => {
+    const service = TestBed.inject(I18nService);
+    service.setLang('pt');
+    expect(service.currentLang()).toBe('pt');
+    expect(service.t().nav.home).toBe('Início');
+  });
+
+  it('restores a saved Portuguese preference', () => {
+    localStorage.setItem('lang', 'pt');
+    const service = TestBed.inject(I18nService);
+    expect(service.currentLang()).toBe('pt');
+    expect(service.t().nav.home).toBe('Início');
   });
 });

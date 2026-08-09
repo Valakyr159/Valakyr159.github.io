@@ -1,5 +1,6 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { CV_DATA } from '../../../../core/data/cv-data';
+import { I18nService } from '../../../../core/services/i18n.service';
 
 @Component({
   selector: 'app-experience',
@@ -9,7 +10,7 @@ import { CV_DATA } from '../../../../core/data/cv-data';
       <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="text-center mb-16 reveal">
           <h2 class="font-display font-bold text-3xl sm:text-4xl mb-4">
-            Experiencia <span class="gradient-text">Profesional</span>
+            {{ i18n.t().experience.title }} <span class="gradient-text">{{ i18n.t().experience.titleHighlight }}</span>
           </h2>
         </div>
 
@@ -45,7 +46,7 @@ import { CV_DATA } from '../../../../core/data/cv-data';
                     </div>
 
                     <ul class="space-y-3 mb-6">
-                      @for (highlight of exp.highlights; track highlight) {
+                      @for (highlight of i18n.t().experience.items[exp.id].highlights; track highlight) {
                         <li class="flex items-start gap-3 text-sm md:text-base leading-relaxed" style="color: var(--text-secondary)">
                           <span class="mt-1.5 w-1.5 h-1.5 rounded-full flex-shrink-0" style="background: var(--accent-cyan)"></span>
                           <span>{{ highlight }}</span>
@@ -71,5 +72,6 @@ import { CV_DATA } from '../../../../core/data/cv-data';
   `
 })
 export class ExperienceComponent {
+  i18n = inject(I18nService);
   experience = CV_DATA.experience;
 }
