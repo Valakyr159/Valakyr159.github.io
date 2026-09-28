@@ -3,28 +3,59 @@
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>KH Birth by Sleep Final Mix — Fusión de comandos y habilidades</title>
+<script>
+(function(){
+try{
+ var t=new URLSearchParams(location.search).get('theme');
+ if(t==='light') document.documentElement.setAttribute('data-theme','light');
+}catch(e){}
+window.addEventListener('message',function(ev){
+ if(ev.origin!==window.location.origin) return;
+ if(ev.data && ev.data.type==='kh-guide-theme'){
+  document.documentElement.setAttribute('data-theme', ev.data.value==='light'?'light':'dark');
+ }
+});
+})();
+</script>
 <style>
-:root{--bg:#080d19;--panel:#101a2d;--panel2:#16243d;--line:#2b3c60;--txt:#edf4ff;--muted:#aebbd1;--cyan:#7dd3fc;--green:#86efac;--gold:#fcd34d;--red:#fca5a5;--pink:#f0abfc}
-*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 20% 0,#162544,#080d19 55%);color:var(--txt);font:15px/1.55 system-ui,-apple-system,Segoe UI,Roboto,Arial}
+:root{
+--bg:#080d19;--panel:#101a2d;--panel2:#16243d;--line:#2b3c60;--txt:#edf4ff;--muted:#aebbd1;
+--cyan:#7dd3fc;--green:#86efac;--gold:#fcd34d;--red:#fca5a5;--pink:#f0abfc;
+--gradient-a:#162544;--gradient-b:#080d19;--card-bg:rgba(16,26,45,.96);--th-bg:#182743;--hover-tint:#ffffff08;
+--tag-bg:#213454;--tag-border:#30486f;--tag-crystal-bg:#3a2f10;--tag-crystal-border:#5a4a18;
+--search-bg:#091326;--search-color:#ffffff;--code-bg:#091326;--code-color:#dbeafe;
+--filterbar-bg:rgba(9,15,28,.92);--chip-bg:#16243d;--chip-active-bg:#2c4420;--chip-active-border:#4c7a34;
+--chip-reset-bg:#26160f;--chip-reset-border:#5a3418;--shadow-card:0 12px 35px #0004
+}
+:root[data-theme="light"]{
+--bg:#f7f8fb;--panel:#ffffff;--panel2:#eef1f6;--line:#dde3ee;--txt:#101828;--muted:#55617a;
+--cyan:#0369a1;--green:#15803d;--gold:#b45309;--red:#dc2626;--pink:#a21caf;
+--gradient-a:#e6ebfa;--gradient-b:#f7f8fb;--card-bg:rgba(255,255,255,.92);--th-bg:#eef1f6;--hover-tint:#00000007;
+--tag-bg:#eef1f6;--tag-border:#dde3ee;--tag-crystal-bg:#fef3c7;--tag-crystal-border:#f5cb6b;
+--search-bg:#ffffff;--search-color:#101828;--code-bg:#eef1f6;--code-color:#101828;
+--filterbar-bg:rgba(255,255,255,.92);--chip-bg:#eef1f6;--chip-active-bg:#dcfce7;--chip-active-border:#86efac;
+--chip-reset-bg:#ffedd5;--chip-reset-border:#fdba74;--shadow-card:0 12px 30px #0001
+}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 20% 0,var(--gradient-a),var(--gradient-b) 55%);color:var(--txt);font:15px/1.55 system-ui,-apple-system,Segoe UI,Roboto,Arial;transition:background-color .2s,color .2s}
 main{max-width:1400px;margin:auto;padding:28px 16px 60px}h1{font-size:clamp(26px,5vw,44px);line-height:1.1;margin:0 0 8px}h2{margin:34px 0 12px}h3{margin-top:0}.muted{color:var(--muted)}
-.card{background:rgba(16,26,45,.96);border:1px solid var(--line);border-radius:16px;padding:18px;margin:14px 0;box-shadow:0 12px 35px #0004}
+.card{background:var(--card-bg);border:1px solid var(--line);border-radius:16px;padding:18px;margin:14px 0;box-shadow:var(--shadow-card)}
 .notice{border-left:4px solid var(--gold)}.important{border-left:4px solid var(--green)}
 .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}.box{background:var(--panel2);border:1px solid var(--line);border-radius:12px;padding:14px}
 table{border-collapse:collapse;width:100%;font-size:13.5px}th,td{border-bottom:1px solid var(--line);padding:8px 9px;text-align:left;vertical-align:top;white-space:nowrap}
 td:nth-child(2),td:nth-child(3){white-space:normal}
-th{background:#182743;position:sticky;top:0;z-index:2}tr:hover td{background:#ffffff08}
+th{background:var(--th-bg);position:sticky;top:0;z-index:2}tr:hover td{background:var(--hover-tint)}
 .scroll{overflow:auto;border-radius:12px;border:1px solid var(--line)}
 .skill{color:var(--green);font-weight:700}.crystal{color:var(--gold);font-weight:700}.recipe{font-weight:650}
-.tag{display:inline-block;background:#213454;border:1px solid #30486f;padding:2px 9px;border-radius:99px;font-size:12px;margin:2px}
-.tag.crystal{background:#3a2f10;border-color:#5a4a18;color:var(--gold)}
-.search{width:100%;background:#091326;color:white;border:1px solid var(--line);border-radius:10px;padding:12px;font-size:15px;margin:5px 0}
-ol li{margin:8px 0}code{background:#091326;padding:2px 6px;border-radius:6px;color:#dbeafe;font-size:12.5px}
+.tag{display:inline-block;background:var(--tag-bg);border:1px solid var(--tag-border);padding:2px 9px;border-radius:99px;font-size:12px;margin:2px}
+.tag.crystal{background:var(--tag-crystal-bg);border-color:var(--tag-crystal-border);color:var(--gold)}
+.search{width:100%;background:var(--search-bg);color:var(--search-color);border:1px solid var(--line);border-radius:10px;padding:12px;font-size:15px;margin:5px 0}
+ol li{margin:8px 0}code{background:var(--code-bg);padding:2px 6px;border-radius:6px;color:var(--code-color);font-size:12.5px}
 .small{font-size:12px;color:var(--muted)}.check{color:var(--cyan)}
-.filterbar{position:sticky;top:8px;z-index:5;background:rgba(9,15,28,.92);backdrop-filter:blur(6px);border:1px solid var(--line);border-radius:16px;padding:14px;margin:16px 0}
+.filterbar{position:sticky;top:8px;z-index:5;background:var(--filterbar-bg);backdrop-filter:blur(6px);border:1px solid var(--line);border-radius:16px;padding:14px;margin:16px 0}
 .chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
-.chip{cursor:pointer;user-select:none;background:#16243d;border:1px solid var(--line);border-radius:99px;padding:6px 13px;font-size:13px;color:var(--muted);transition:.15s}
-.chip.active{background:#2c4420;border-color:#4c7a34;color:var(--green)}
-.chip.reset{background:#26160f;border-color:#5a3418;color:var(--gold)}
+.chip{cursor:pointer;user-select:none;background:var(--chip-bg);border:1px solid var(--line);border-radius:99px;padding:6px 13px;font-size:13px;color:var(--muted);transition:.15s}
+.chip.active{background:var(--chip-active-bg);border-color:var(--chip-active-border);color:var(--green)}
+.chip.reset{background:var(--chip-reset-bg);border-color:var(--chip-reset-border);color:var(--gold)}
 .tierhead{display:flex;align-items:center;gap:10px;margin:30px 0 6px}
 .tierhead h2{margin:0}.tiercount{font-size:12px;color:var(--muted)}
 .ability{padding:16px}
