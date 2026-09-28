@@ -11,14 +11,16 @@ header{max-width:1400px;margin:0 auto;padding:28px 16px 0;width:100%}
 h1{font-size:clamp(26px,5vw,42px);line-height:1.1;margin:0 0 6px}
 .muted{color:var(--muted);margin:0 0 18px}
 .tabbar{max-width:1400px;margin:0 auto;padding:0 16px;width:100%;display:flex;gap:10px;flex-wrap:wrap}
-.tab{cursor:pointer;user-select:none;background:var(--panel2);border:1px solid var(--line);border-radius:14px 14px 0 0;padding:12px 20px;font-weight:700;font-size:15px;color:var(--muted);transition:.15s;border-bottom:none}
-.tab.active{background:var(--panel);color:var(--txt);box-shadow:0 -6px 20px #0006}
+.tab{cursor:pointer;user-select:none;background:var(--panel2);border:1px solid var(--line);border-radius:14px 14px 0 0;padding:12px 20px;font-weight:700;font-size:15px;color:var(--muted);transition:.15s;border-bottom:none;font-family:inherit;text-align:left}
+.tab:focus-visible{outline:2px solid var(--cyan);outline-offset:2px}
+.tab[aria-selected="true"]{background:var(--panel);color:var(--txt);box-shadow:0 -6px 20px #0006}
 .tab .sub{display:block;font-weight:400;font-size:12px;color:var(--muted);margin-top:2px}
+main{display:flex;flex-direction:column;flex:1}
 .panels{flex:1;background:var(--panel);border-top:1px solid var(--line)}
 .panel{display:none;height:100%}
 .panel.active{display:block}
 iframe{width:100%;height:100%;min-height:calc(100vh - 150px);border:0;display:block;background:var(--bg)}
-footer{max-width:1400px;margin:0 auto;padding:14px 16px 24px;width:100%;font-size:12px;color:var(--muted);border-top:1px solid var(--line)}
+footer{max-width:1400px;margin:0 auto;padding:14px 16px 24px;width:100%;font-size:12px;color:var(--muted);border-top:1px solid var(--line);background:var(--bg)}
 </style>
 </head>
 <body>
@@ -26,25 +28,42 @@ footer{max-width:1400px;margin:0 auto;padding:14px 16px 24px;width:100%;font-siz
 <h1>⌨️ Guía de Kingdom Hearts</h1>
 <p class="muted">Recopilación de guías jugables en español, un juego por sección. Elige una pestaña.</p>
 </header>
-<div class="tabbar" id="tabbar">
-<div class="tab active" data-target="panel-bbs">⚔️ Birth by Sleep<span class="sub">Fusión de comandos y habilidades</span></div>
-<div class="tab" data-target="panel-ddd">💤 Dream Drop Distance<span class="sub">Creación de Lucientes</span></div>
+<main>
+<div class="tabbar" id="tabbar" role="tablist" aria-label="Guías de Kingdom Hearts">
+<button class="tab" role="tab" id="tabbtn-bbs" aria-selected="true" aria-controls="panel-bbs" data-target="panel-bbs">⚔️ Birth by Sleep<span class="sub">Fusión de comandos y habilidades</span></button>
+<button class="tab" role="tab" id="tabbtn-ddd" aria-selected="false" aria-controls="panel-ddd" data-target="panel-ddd" tabindex="-1">💤 Dream Drop Distance<span class="sub">Creación de Lucientes</span></button>
 </div>
 <div class="panels">
-<div class="panel active" id="panel-bbs"><iframe src="birth-by-sleep.html" title="Guía Birth by Sleep"></iframe></div>
-<div class="panel" id="panel-ddd"><iframe data-src="dream-drop-distance.html" title="Guía Dream Drop Distance"></iframe></div>
+<div class="panel active" id="panel-bbs" role="tabpanel" aria-labelledby="tabbtn-bbs"><iframe src="birth-by-sleep.html" title="Guía Birth by Sleep"></iframe></div>
+<div class="panel" id="panel-ddd" role="tabpanel" aria-labelledby="tabbtn-ddd" hidden><iframe data-src="dream-drop-distance.html" title="Guía Dream Drop Distance"></iframe></div>
 </div>
+</main>
 <footer>Proyecto personal de guías de Kingdom Hearts. Cada pestaña es una guía independiente y autocontenida.</footer>
 <script>
-document.querySelectorAll('.tab').forEach(tab=>{
- tab.addEventListener('click',()=>{
-  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
-  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
-  tab.classList.add('active');
-  const panel=document.getElementById(tab.dataset.target);
-  panel.classList.add('active');
-  const frame=panel.querySelector('iframe');
-  if(frame && !frame.src && frame.dataset.src) frame.src=frame.dataset.src;
+const tabs=[...document.querySelectorAll('.tab')];
+function selectTab(tab){
+ tabs.forEach(t=>{
+  const selected=t===tab;
+  t.setAttribute('aria-selected',String(selected));
+  t.tabIndex=selected?0:-1;
+  const panel=document.getElementById(t.dataset.target);
+  panel.classList.toggle('active',selected);
+  panel.hidden=!selected;
+  if(selected){
+   const frame=panel.querySelector('iframe');
+   if(frame && !frame.src && frame.dataset.src) frame.src=frame.dataset.src;
+  }
+ });
+}
+tabs.forEach((tab,i)=>{
+ tab.addEventListener('click',()=>selectTab(tab));
+ tab.addEventListener('keydown',e=>{
+  if(e.key==='ArrowRight'||e.key==='ArrowLeft'){
+   e.preventDefault();
+   const next=tabs[(i+(e.key==='ArrowRight'?1:-1)+tabs.length)%tabs.length];
+   next.focus();
+   selectTab(next);
+  }
  });
 });
 </script>
