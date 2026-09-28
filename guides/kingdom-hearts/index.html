@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Guía de Kingdom Hearts</title>
+<style>
+:root{--bg:#080d19;--panel:#101a2d;--panel2:#16243d;--line:#2b3c60;--txt:#edf4ff;--muted:#aebbd1;--cyan:#7dd3fc;--green:#86efac;--gold:#fcd34d}
+*{box-sizing:border-box}html,body{height:100%}
+body{margin:0;background:radial-gradient(circle at 20% 0,#162544,#080d19 55%);color:var(--txt);font:15px/1.55 system-ui,-apple-system,Segoe UI,Roboto,Arial;display:flex;flex-direction:column}
+header{max-width:1400px;margin:0 auto;padding:28px 16px 0;width:100%}
+h1{font-size:clamp(26px,5vw,42px);line-height:1.1;margin:0 0 6px}
+.muted{color:var(--muted);margin:0 0 18px}
+.tabbar{max-width:1400px;margin:0 auto;padding:0 16px;width:100%;display:flex;gap:10px;flex-wrap:wrap}
+.tab{cursor:pointer;user-select:none;background:var(--panel2);border:1px solid var(--line);border-radius:14px 14px 0 0;padding:12px 20px;font-weight:700;font-size:15px;color:var(--muted);transition:.15s;border-bottom:none}
+.tab.active{background:var(--panel);color:var(--txt);box-shadow:0 -6px 20px #0006}
+.tab .sub{display:block;font-weight:400;font-size:12px;color:var(--muted);margin-top:2px}
+.panels{flex:1;background:var(--panel);border-top:1px solid var(--line)}
+.panel{display:none;height:100%}
+.panel.active{display:block}
+iframe{width:100%;height:100%;min-height:calc(100vh - 150px);border:0;display:block;background:var(--bg)}
+footer{max-width:1400px;margin:0 auto;padding:14px 16px 24px;width:100%;font-size:12px;color:var(--muted);border-top:1px solid var(--line)}
+</style>
+</head>
+<body>
+<header>
+<h1>⌨️ Guía de Kingdom Hearts</h1>
+<p class="muted">Recopilación de guías jugables en español, un juego por sección. Elige una pestaña.</p>
+</header>
+<div class="tabbar" id="tabbar">
+<div class="tab active" data-target="panel-bbs">⚔️ Birth by Sleep<span class="sub">Fusión de comandos y habilidades</span></div>
+<div class="tab" data-target="panel-ddd">💤 Dream Drop Distance<span class="sub">Creación de Lucientes</span></div>
+</div>
+<div class="panels">
+<div class="panel active" id="panel-bbs"><iframe src="birth-by-sleep.html" title="Guía Birth by Sleep"></iframe></div>
+<div class="panel" id="panel-ddd"><iframe data-src="dream-drop-distance.html" title="Guía Dream Drop Distance"></iframe></div>
+</div>
+<footer>Proyecto personal de guías de Kingdom Hearts. Cada pestaña es una guía independiente y autocontenida.</footer>
+<script>
+document.querySelectorAll('.tab').forEach(tab=>{
+ tab.addEventListener('click',()=>{
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  tab.classList.add('active');
+  const panel=document.getElementById(tab.dataset.target);
+  panel.classList.add('active');
+  const frame=panel.querySelector('iframe');
+  if(frame && !frame.src && frame.dataset.src) frame.src=frame.dataset.src;
+ });
+});
+</script>
+</body>
+</html>

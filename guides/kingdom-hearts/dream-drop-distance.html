@@ -1,0 +1,221 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>KH Dream Drop Distance — Creación de Lucientes</title>
+<style>
+:root{--bg:#080d19;--panel:#101a2d;--panel2:#16243d;--line:#2b3c60;--txt:#edf4ff;--muted:#aebbd1;--cyan:#7dd3fc;--green:#86efac;--gold:#fcd34d;--red:#fca5a5;--pink:#f0abfc}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 20% 0,#162544,#080d19 55%);color:var(--txt);font:15px/1.55 system-ui,-apple-system,Segoe UI,Roboto,Arial}
+main{max-width:1400px;margin:auto;padding:28px 16px 60px}h1{font-size:clamp(26px,5vw,44px);line-height:1.1;margin:0 0 8px}h2{margin:34px 0 12px}h3{margin-top:0}.muted{color:var(--muted)}
+.card{background:rgba(16,26,45,.96);border:1px solid var(--line);border-radius:16px;padding:18px;margin:14px 0;box-shadow:0 12px 35px #0004}
+.notice{border-left:4px solid var(--gold)}.important{border-left:4px solid var(--green)}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}.box{background:var(--panel2);border:1px solid var(--line);border-radius:12px;padding:14px}
+table{border-collapse:collapse;width:100%;font-size:13.5px}th,td{border-bottom:1px solid var(--line);padding:8px 9px;text-align:left;vertical-align:top;white-space:nowrap}
+td:nth-child(2),td:nth-child(3),td:nth-child(4){white-space:normal}
+th{background:#182743;position:sticky;top:0;z-index:2}tr:hover td{background:#ffffff08}
+.scroll{overflow:auto;border-radius:12px;border:1px solid var(--line)}
+.skill{color:var(--green);font-weight:700}.crystal{color:var(--gold);font-weight:700}.recipe{font-weight:650}
+.tag{display:inline-block;background:#213454;border:1px solid #30486f;padding:2px 9px;border-radius:99px;font-size:12px;margin:2px}
+.tag.crystal{background:#3a2f10;border-color:#5a4a18;color:var(--gold)}
+.tag.ar{background:#3a1030;border-color:#5a1848;color:var(--pink)}
+.search{width:100%;background:#091326;color:white;border:1px solid var(--line);border-radius:10px;padding:12px;font-size:15px;margin:5px 0}
+ol li{margin:8px 0}code{background:#091326;padding:2px 6px;border-radius:6px;color:#dbeafe;font-size:12.5px}
+.small{font-size:12px;color:var(--muted)}.check{color:var(--cyan)}
+.filterbar{position:sticky;top:8px;z-index:5;background:rgba(9,15,28,.92);backdrop-filter:blur(6px);border:1px solid var(--line);border-radius:16px;padding:14px;margin:16px 0}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+.chip{cursor:pointer;user-select:none;background:#16243d;border:1px solid var(--line);border-radius:99px;padding:6px 13px;font-size:13px;color:var(--muted);transition:.15s}
+.chip.active{background:#2c4420;border-color:#4c7a34;color:var(--green)}
+.chip.reset{background:#26160f;border-color:#5a3418;color:var(--gold)}
+.hidden{display:none!important}
+footer.small{margin-top:30px;border-top:1px solid var(--line);padding-top:14px}
+.legend{display:flex;flex-wrap:wrap;gap:14px;font-size:12px;color:var(--muted)}
+details>summary{cursor:pointer;color:var(--cyan);font-weight:600;padding:6px 0}
+.dpiece{color:var(--pink);font-weight:700}
+</style>
+</head>
+<body><main>
+<h1>💤 Kingdom Hearts Dream Drop Distance</h1>
+<p class="muted">Guía práctica de <b>Creación de Lucientes</b> (el sistema de crianza de Dream Eaters aliados) para Kingdom Hearts 3D / HD 2.8 Final Chapter Prologue: términos reales en español, cómo funciona la mezcla de Oniritas, y las recetas conocidas de <b>~54 especies</b> de Lucientes — con buscador.</p>
+
+<div class="card notice">
+<h3>📖 Antes de empezar: los términos reales del juego</h3>
+<p>Los Dream Eaters se llaman en español <b>Oníridos</b>. Se dividen en dos bandos: los <b>Terrores</b> (enemigos, se comen los sueños buenos y plantan pesadillas) y los <b class="skill">Lucientes</b> (tus aliados, se comen las pesadillas para protegerte). Solo puedes <b>crear</b> Lucientes.</p>
+<div class="grid">
+<div class="box"><b>Onirita</b><div class="small">Fragmento de sueño cristalizado. Es el "ingrediente" que combinas para crear un Luciente. Hay <b>17 tipos</b> (adjetivos) y cada uno existe en <b>3 grados</b>.</div></div>
+<div class="box"><b>Ensueño → Ilusión → Fantasía</b><div class="small">Los 3 grados de una Onirita, de más común a más raro. El orden en español es <i>[grado] + [adjetivo]</i>: p. ej. <span class="dpiece">Fantasía Fulgurante</span> (= "Brilliant Fantasy").</div></div>
+<div class="box"><b>Fortificar</b><div class="small">Tras crear un Luciente, puedes darle Oniritas extra para subir su rango, o sacrificarle un comando para regalarle una característica nueva.</div></div>
+<div class="box"><b>Vínculo / Afinidad</b><div class="small">Vida en batalla a tu lado y minijuegos táctiles suben la <b>Afinidad</b> (máx. 9) y rellenan el <b>tablero de habilidades</b> del Luciente.</div></div>
+</div>
+<p class="small">Los nombres de las 54 especies de Lucientes (Meow Wow, Aura Lion, Komory Bat...) se mantienen en <b>inglés</b> tanto en el texto del juego como en las guías en español de referencia (khworld.org); solo el doblaje hablado usa a veces variantes castellanizadas (p. ej. "Marramaguau" para Meow Wow en los diálogos). Por eso esta guía usa el nombre que verás en el menú de creación.</p>
+</div>
+
+<h2>🧩 Cómo funciona la creación de Lucientes</h2>
+<div class="card">
+<ol>
+<li>Recoges <b>Oniritas</b> explorando el Mundo de los Sueños: las sueltan los oníridos enemigos al derrotarlos, aparecen en cofres de tesoro, se compran en la <b>Tienda Moguri</b> (conforme avanza la historia) y se obtienen en <b>Portales especiales</b> y como premio del minijuego de cartas <b>Naiperama / Flick Rush</b>.</li>
+<li>Abres el menú <b>Lucientes → Crear</b>. Eliges qué especie quieres crear de la lista (algunas están bloqueadas hasta conseguir su <b>fórmula</b>, que viene de cofres, portales, tiendas o recompensas de historia).</li>
+<li>Cada especie pide una <b>combinación fija</b> de dos tipos de Onirita (con grado incluido) en <b>cantidades concretas</b> — por ejemplo <span class="dpiece">3× Ensueño Brioso</span> + <span class="dpiece">2× Ensueño Vivaz</span> para un Meow Wow. Reúnes esas cantidades exactas y confirmas.</li>
+<li>Cuantas más Oniritas de <b>grado Fantasía</b> uses (en vez de Ensueño/Ilusión), mejor nace el Luciente y más fácil desbloqueas especies raras — la Fantasía es el grado más escaso.</li>
+<li>Tras nacer, puedes <b>fortificarlo</b>: darle Oniritas de sobra para subir su rango, o sacrificar un comando de mando para heredarle una característica.</li>
+</ol>
+<p class="box"><b>Ejemplo real:</b> <span class="recipe">Meow Wow</span> = <span class="dpiece">3× Ensueño Brioso</span> + <span class="dpiece">2× Ensueño Vivaz</span> ("3 Rampant Figment + 2 Vibrant Figment"). Sora ya empieza la historia con uno; esta fórmula sirve para criar ejemplares adicionales.</p>
+</div>
+
+<h2>🔎 Filtra la guía por Luciente o por Onirita</h2>
+<div class="filterbar">
+<input id="q" class="search" placeholder="🔎 Escribe un Luciente (p. ej. Meow Wow, Aura Lion...) o una Onirita (p. ej. Feroz, Fulgurante...)">
+<div class="chips" id="tierChips">
+<span class="chip" data-tier="Ensueño">Ensueño</span>
+<span class="chip" data-tier="Ilusión">Ilusión</span>
+<span class="chip" data-tier="Fantasía">Fantasía</span>
+<span class="chip reset" data-tier="">✕ Quitar filtro</span>
+</div>
+<p class="small" style="margin:8px 0 0">Los chips filtran recetas que usan ese <b>grado</b> de Onirita. El buscador filtra por nombre de Luciente o de Onirita a la vez.</p>
+</div>
+
+<h2>📖 Los 17 tipos de Onirita y sus 3 grados</h2>
+<p class="muted">Referencia rápida de nombres exactos en español, con su nombre original en inglés entre paréntesis.</p>
+<div class="scroll"><table id="typeTable">
+<thead><tr><th>Tipo</th><th>Ensueño (Figment)</th><th>Ilusión (Fancy)</th><th>Fantasía (Fantasy)</th></tr></thead>
+<tbody></tbody>
+</table></div>
+
+<h2>🗃️ Recetas de creación (~54 Lucientes)</h2>
+<p class="muted">Cantidad exacta de cada Onirita que pide cada especie. Usa el mismo buscador de arriba para encontrar un Luciente o un ingrediente concreto.</p>
+<div class="scroll" style="max-height:560px"><table id="recipeTable">
+<thead><tr><th>Luciente</th><th>Onirita 1</th><th>Onirita 2</th><th>Notas</th></tr></thead>
+<tbody></tbody>
+</table></div>
+
+<h2>💠 ¿Dónde consigo Oniritas?</h2>
+<div class="grid">
+<div class="box"><b>🗡️ Derrotando Terrores/Lucientes rivales</b><div class="small">Cada oñírido enemigo suelta tipos concretos de Onirita al ser derrotado (normalmente de su propio "elemento" temático).</div></div>
+<div class="box"><b>🏪 Tienda Moguri</b><div class="small">Vende Oniritas y fórmulas básicas a cambio de munny/platinos; el catálogo crece según avanzas en la historia.</div></div>
+<div class="box"><b>🎁 Cofres de tesoro</b><div class="small">Repartidos por cada mundo; varios contienen directamente la <b>fórmula</b> de un Luciente en vez de Oniritas.</div></div>
+<div class="box"><b>🌀 Portales especiales</b><div class="small">Portales únicos por mundo (StreetPass / Portal del Sueño) que dan Oniritas de grado alto y fórmulas raras.</div></div>
+<div class="box"><b>🃏 Naiperama (Flick Rush)</b><div class="small">El minijuego de cartas con Lucientes. Ciertos hitos (p. ej. nivel 20) desbloquean fórmulas nuevas.</div></div>
+</div>
+
+<h2>🔗 Vínculo, Afinidad y tablero de habilidades</h2>
+<div class="card">
+<ul>
+<li><b>Afinidad</b> (0–9): el cariño del Luciente hacia ti. Sube luchando con él en el equipo y jugando con él (acariciarlo y darle "toques aislados" en la pantalla táctil). Cuanta más Afinidad, más veces se une al combate y más dura su ataque de Vínculo.</li>
+<li><b>Disposiciones</b>: cada Luciente tiene 4, repartidas en 2 que se desbloquean acariciándolo y 2 con toques aislados. Cada disposición abre una ruta distinta del <b>tablero de habilidades</b> (hasta 16 habilidades por Luciente).</li>
+<li><b>Puntos de Vínculo</b>: se ganan peleando con el Luciente equipado; rellenan el tablero y desbloquean magias, comandos y mejoras de estadística (VT, Fuerza, Magia, Defensa).</li>
+<li><b>Fortificar</b>: una vez creado, puedes seguir dándole Oniritas para subirle el rango, o sacrificarle un comando para heredar una característica de ese comando.</li>
+</ul>
+</div>
+
+<footer class="small">
+<div class="legend">
+<span><b>Ensueño / Ilusión / Fantasía</b> = los 3 grados de Onirita, de común a raro</span>
+<span><b>AR</b> = fórmula exclusiva de tarjeta AR (Realidad Aumentada), cantidad no siempre documentada</span>
+</div>
+<p>Fuentes principales: guía de Spirits de KHWorld (khworld.org), Kingdom Hearts Wiki en español (Fandom — páginas de Onirita, Fulgurante, Feroz, Veloz, Alado, Gélido, Brioso, Melodioso, Misterioso, Espinosa, Épica, Salvaje, Visceral, Atribulado, Cautivadora, Onírido), el anexo de creación de Lucientes de Gamerbase.net, y el Community Dream Eater Ingredient Compendium de los foros de KH13.com (documento comunitario, en construcción a fecha de esta guía).</p>
+<p class="small"><b>⚠️ Nota de esta primera versión:</b> la tabla de recetas se apoya en un compendio comunitario en inglés (KH13) traducido a los términos oficiales en español verificados en la Kingdom Hearts Wiki. Algunas entradas (marcadas <span class="tag ar">AR</span> o "cantidad no confirmada") no estaban completas en la fuente original. Si detectas algún dato que no coincide con lo que ves en tu partida, dímelo y la corrijo — igual que se hizo con la guía de Birth by Sleep.</p>
+</footer>
+
+<script>
+const TYPES=[
+["Fleeting","Veloz","Veloz"],["Lofty","Alado","Alada"],["Rampant","Brioso","Briosa"],
+["Dulcet","Melodioso","Melodiosa"],["Malleable","Maleable","Maleable"],["Prickly","Espinoso","Espinosa"],
+["Epic","Épico","Épica"],["Charming","Cautivador","Cautivadora"],["Intrepid","Feroz","Feroz"],
+["Savage","Visceral","Visceral"],["Noble","Noble","Noble"],["Grim","Gélido","Gélida"],
+["Vibrant","Vivaz","Vivaz"],["Wild","Salvaje","Salvaje"],["Brilliant","Fulgurante","Fulgurante"],
+["Troubling","Atribulado","Atribulada"],["Wondrous","Misterioso","Misteriosa"]
+];
+
+const RECIPES=[
+["Aura Lion","3× Fantasía Noble","3× Fantasía Feroz",""],
+["Cera Terror","4× Fantasía Gélida","8× Fantasía Feroz",""],
+["Chef Kyroo","3× Ilusión Misteriosa","3× Ilusión Noble",""],
+["Cyber Yog","3× Ilusión Noble","4× Ensueño Gélido",""],
+["Drak Quack","3× Fantasía Misteriosa","4× Ilusión Vivaz",""],
+["Drill Sye","2× Fantasía Noble","5× Ilusión Feroz",""],
+["Ducky Goose","3× Ilusión Melodiosa","3× Ilusión Vivaz",""],
+["Eaglider","1× Fantasía Espinosa","3× Ilusión Gélida",""],
+["Electricorn","4× Ilusión Veloz","12× Ilusión Alada",""],
+["Escarglow","3× Ensueño Veloz","4× Ensueño Gélido",""],
+["Fin Fatale","3× Ilusión Briosa","3× Ensueño Noble",""],
+["Fishboné","3× Ilusión Misteriosa","6× Ensueño Brioso",""],
+["Flowbermeow","3× Fantasía Maleable","2× Fantasía Veloz",""],
+["Frootz Cat","—","—","Fórmula exclusiva de tarjeta AR — cantidades no documentadas"],
+["Ghostabocky","3× Fantasía Misteriosa","5× Ensueño Melodioso",""],
+["Halbird","1× Fantasía Épica","4× Ilusión Alada",""],
+["Hebby Repp","3× Ensueño Feroz","3× Ensueño Noble",""],
+["Iceguin Ace","2× Fantasía Briosa","4× Ilusión Alada",""],
+["Jestabocky","3× Ilusión Vivaz","4× Ensueño Brioso",""],
+["Juggle Pup","2× Fantasía Vivaz","4× Ilusión Misteriosa",""],
+["Kab Kannon","—","—","Fórmula exclusiva de tarjeta AR — cantidades no documentadas"],
+["Keeba Tiger","Fantasía Feroz","Ilusión Melodiosa","Cantidad exacta no confirmada en la fuente"],
+["KO Kabuto","3× Ilusión Noble","6× Ensueño Brioso",""],
+["Komory Bat","3× Ensueño Atribulado","2× Ensueño Brioso","Compañero inicial de Riku; esta fórmula cría ejemplares extra"],
+["Kooma Panda","3× Ilusión Vivaz","5× Ensueño Feroz",""],
+["Lord Kyroo","2× Fantasía Fulgurante","5× Ilusión Noble",""],
+["Majik Lapin","2× Fantasía Melodiosa","8× Ensueño Atribulado",""],
+["Me Me Bunny","3× Ilusión Feroz","6× Ensueño Brioso",""],
+["Meowjesty","1× Fantasía Maleable","2× Fantasía Briosa","Fórmula de tarjeta AR"],
+["Meow Wow","3× Ensueño Brioso","2× Ensueño Vivaz","Compañero inicial de Sora; esta fórmula cría ejemplares extra"],
+["Necho Cat","3× Ilusión Melodiosa","6× Ensueño Brioso",""],
+["Peepsta Hoo","3× Ensueño Misterioso","3× Ensueño Melodioso",""],
+["Pegaslick","3× Ilusión Alada","4× Ilusión Melodiosa",""],
+["Pricklemane","3× Ensueño Feroz","2× Ensueño Brioso",""],
+["R & R Seal","3× Fantasía Cautivadora","3× Fantasía Salvaje","Fórmula de tarjeta AR"],
+["Ryu Dragon","3× Fantasía Épica","2× Fantasía Fulgurante",""],
+["Sir Kyroo","3× Ilusión Noble","4× Ensueño Gélido",""],
+["Skelterwild","Fantasía Gélida","Fantasía Visceral","Cantidad exacta no confirmada en la fuente"],
+["Staggerceps","3× Ilusión Gélida","4× Ensueño Veloz",""],
+["Sudo Neku","3× Fantasía Veloz + 2× Fantasía Salvaje","— o bien 1× Fantasía Salvaje + 2× Fantasía Noble","Fórmula de tarjeta AR (dos combinaciones válidas)"],
+["Tama Sheep","3× Ensueño Vivaz","2× Ensueño Atribulado",""],
+["Tatsu Blaze","3× Ilusión Gélida","3× Ilusión Briosa",""],
+["Tatsu Steed","3× Ensueño Alado","3× Ensueño Misterioso",""],
+["Thunderaffe","5× Ilusión Veloz","7× Ilusión Noble",""],
+["Toximander","5× Ensueño Atribulado","6× Ensueño Vivaz",""],
+["Tyranto Rex","1× Fantasía Épica","3× Fantasía Feroz",""],
+["Ursa Circus","3× Fantasía Veloz + 2× Fantasía Salvaje","1× Fantasía Épica + 3× Fantasía Feroz","Fórmula de tarjeta AR; existe además 12× Fantasía Misteriosa + 2× Fantasía Épica"],
+["Wheeflower","3× Ensueño Alado","4× Ensueño Brioso",""],
+["Woeflower","3× Ilusión Atribulada","3× Ilusión Alada",""],
+["Yoggy Ram","3× Ensueño Gélido","2× Ensueño Melodioso",""],
+["Zolephant","1× Fantasía Maleable","2× Ilusión Melodiosa",""],
+["Catanuki","—","—","Luciente añadido en la versión HD — fórmula no documentada en las fuentes consultadas"],
+["Beatalike","—","—","Luciente añadido en la versión HD — fórmula no documentada en las fuentes consultadas"],
+["Tubguin Ace","—","—","Luciente añadido en la versión HD — fórmula no documentada en las fuentes consultadas"]
+];
+
+const typeBody=document.querySelector("#typeTable tbody");
+TYPES.forEach(([en,m,f])=>{
+ const tr=document.createElement("tr");
+ tr.innerHTML=`<td>${en}</td><td>Ensueño ${m}</td><td>Ilusión ${f}</td><td>Fantasía ${f}</td>`;
+ typeBody.appendChild(tr);
+});
+
+const recipeBody=document.querySelector("#recipeTable tbody");
+RECIPES.forEach(([name,i1,i2,notes])=>{
+ const tr=document.createElement("tr");
+ tr.dataset.search=(name+" "+i1+" "+i2+" "+notes).toLowerCase();
+ const arTag=notes.includes("AR")?'<span class="tag ar">AR</span> ':'';
+ tr.innerHTML=`<td class="recipe">${arTag}${name}</td><td>${i1}</td><td>${i2}</td><td class="small">${notes}</td>`;
+ recipeBody.appendChild(tr);
+});
+
+const q=document.getElementById("q");
+let activeTier="";
+function applyFilter(){
+ const term=q.value.trim().toLowerCase();
+ [...recipeBody.children].forEach(tr=>{
+  const matchesText=!term||tr.dataset.search.includes(term);
+  const matchesTier=!activeTier||tr.dataset.search.includes(activeTier.toLowerCase());
+  tr.classList.toggle("hidden",!(matchesText&&matchesTier));
+ });
+}
+q.addEventListener("input",applyFilter);
+document.querySelectorAll("#tierChips .chip").forEach(chip=>{
+ chip.addEventListener("click",()=>{
+  activeTier=chip.dataset.tier;
+  document.querySelectorAll("#tierChips .chip").forEach(c=>c.classList.remove("active"));
+  if(activeTier) chip.classList.add("active");
+  applyFilter();
+ });
+});
+</script>
+</main></body></html>
