@@ -274,7 +274,7 @@ export const CV_DATA: CvData = {
       category: 'frontend',
       status: 'live',
       featured: false,
-      demo: '/guides/kingdom-hearts/',
+      route: '/guides/kingdom-hearts',
       date: '2026',
     },
     {

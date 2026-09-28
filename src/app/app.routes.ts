@@ -20,6 +20,12 @@ export const routes: Routes = [
     title: 'Chatbot RAG · Javier Morón',
   },
   {
+    path: 'guides/:slug',
+    loadComponent: () =>
+      import('./pages/guide-viewer/guide-viewer.component').then(m => m.GuideViewerComponent),
+    title: 'Guía · Javier Morón',
+  },
+  {
     path: '**',
     redirectTo: '',
   },
