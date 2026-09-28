@@ -131,6 +131,11 @@ const translations = {
           title: 'NetSuite Cert Prep',
           description: 'Exam simulator for the NetSuite SuiteFoundation certification, with a timer, question navigation, and multiple question banks.',
           longDescription: 'Standalone Angular app that lets you pick a question set (multiple sources), choose whether answers are shown instantly or at the end, randomize the order, and track progress with a circular timer and a question navigation panel.'
+        },
+        'kingdom-hearts-guide': {
+          title: 'Kingdom Hearts Guide',
+          description: 'Interactive Spanish-language guide covering command melding (Birth by Sleep) and Dream Eater creation (Dream Drop Distance), with search and filters.',
+          longDescription: 'A page with two self-contained sections: Birth by Sleep Final Mix command/ability melding, and Dream Drop Distance Dream Eater (Spirit) creation. Item and term names checked against Spanish-language sources (khworld.org, Kingdom Hearts Wiki), with filterable recipe tables by command/Spirit name or ingredient.'
         }
       } as Record<string, ProjectTranslation>
     },
@@ -280,6 +285,11 @@ const translations = {
           title: 'NetSuite Cert Prep',
           description: 'Simulador de examen para la certificación NetSuite SuiteFoundation, con temporizador, navegación entre preguntas y varios bancos de preguntas.',
           longDescription: 'App Angular standalone que permite elegir un set de preguntas (varias fuentes), configurar si se muestran las respuestas al instante o al final, aleatorizar el orden, y hacer seguimiento del progreso con un temporizador circular y un panel de navegación de preguntas.'
+        },
+        'kingdom-hearts-guide': {
+          title: 'Guía de Kingdom Hearts',
+          description: 'Guía interactiva en español con fusión de comandos (Birth by Sleep) y creación de Lucientes (Dream Drop Distance), con buscador y filtros.',
+          longDescription: 'Página con dos secciones autocontenidas: la fusión de comandos y habilidades de Birth by Sleep Final Mix, y la creación de Lucientes (Dream Eaters) de Dream Drop Distance. Nombres de objetos y términos verificados contra fuentes en español (khworld.org, Kingdom Hearts Wiki), con tablas de recetas filtrables por nombre de comando/Luciente o por ingrediente.'
         }
       } as Record<string, ProjectTranslation>
     },

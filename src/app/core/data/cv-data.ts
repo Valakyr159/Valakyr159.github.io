@@ -264,6 +264,20 @@ export const CV_DATA: CvData = {
       date: '2026',
     },
     {
+      id: 'kingdom-hearts-guide',
+      title: 'Guía de Kingdom Hearts',
+      description:
+        'Guía interactiva en español con fusión de comandos (Birth by Sleep) y creación de Lucientes (Dream Drop Distance), con buscador y filtros.',
+      longDescription:
+        'Página con dos secciones autocontenidas: la fusión de comandos y habilidades de Birth by Sleep Final Mix, y la creación de Lucientes (Dream Eaters) de Dream Drop Distance. Nombres de objetos y términos verificados contra fuentes en español (khworld.org, Kingdom Hearts Wiki), con tablas de recetas filtrables por nombre de comando/Luciente o por ingrediente.',
+      tags: ['HTML', 'CSS', 'JavaScript'],
+      category: 'frontend',
+      status: 'live',
+      featured: false,
+      demo: '/guides/kingdom-hearts/',
+      date: '2026',
+    },
+    {
       id: 'netsuite-cert-prep',
       title: 'NetSuite Cert Prep',
       description:
