@@ -27,7 +27,10 @@ export function buildChatContext(ctx: EngineContext): string {
     return name(o.id) + extra;
   });
   lines.push(`Personajes del jugador (${owned.length}): ${owned.join(', ') || 'ninguno marcado'}.`);
-  lines.push(`Banners actuales: ${ctx.meta.banners.map(name).join(', ') || 'no consta'}.`);
+  if (ctx.meta.degraded) {
+    lines.push('AVISO: este meta lo generó el modelo de reserva y puede estar desactualizado (por ejemplo, faltar personajes nuevos). Dilo si el usuario depende de ello.');
+  }
+  lines.push(`Banners actuales: ${ctx.meta.banners.map(name).join(', ') || 'no verificados'}.`);
   lines.push(`Nivel actual de la cuenta (media de sus ${TOP_N} mejores equipos): ${accountScore(scored)}.`);
 
   lines.push('', 'Mejores equipos del meta para el jugador:');

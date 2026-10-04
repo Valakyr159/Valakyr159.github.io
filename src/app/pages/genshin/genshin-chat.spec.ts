@@ -33,6 +33,13 @@ describe('buildChatContext', () => {
     expect(text).toContain('ningún equipo del meta lo incluye');
   });
 
+  it('warns the model when the meta is degraded and does not claim banners it cannot verify', () => {
+    const degraded = buildChatContext({ meta: { ...meta, degraded: true, banners: [] }, roster: ROSTER, owned });
+    expect(degraded).toContain('AVISO');
+    expect(degraded).toContain('Banners actuales: no verificados');
+    expect(text).not.toContain('AVISO');
+  });
+
   it('never exceeds the backend context limit', () => {
     const many = new Map<number, RosterCharacter>();
     for (let i = 1; i <= 600; i++) many.set(i, ch(i, 'Personaje con un nombre muy largo número ' + i, 'Geo'));

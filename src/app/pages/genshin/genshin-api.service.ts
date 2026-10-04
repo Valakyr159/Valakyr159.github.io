@@ -9,6 +9,8 @@ const META_KEY = 'genshin.meta.v1';
 export const META_MAX_AGE_MS = 12 * 3600 * 1000;
 /** Gemini needs ~50 s cold, and Render can take another 30-60 s to wake up. */
 const META_TIMEOUT_MS = 150_000;
+/** A snapshot from the backup model expires quickly in the browser too (the backend keeps it ~10 min). */
+export const DEGRADED_META_MAX_AGE_MS = 10 * 60 * 1000;
 
 /** Error with a message that is safe and useful to show to the user. */
 export class GenshinApiError extends Error {
@@ -58,7 +60,8 @@ export class GenshinApiService {
       if (!raw) return null;
       const meta = JSON.parse(raw) as Meta;
       const age = Date.now() - meta.fetchedAt * 1000;
-      return Array.isArray(meta.teams) && age < maxAgeMs ? meta : null;
+      const limit = meta.degraded ? Math.min(maxAgeMs, DEGRADED_META_MAX_AGE_MS) : maxAgeMs;
+      return Array.isArray(meta.teams) && age < limit ? meta : null;
     } catch {
       return null;
     }

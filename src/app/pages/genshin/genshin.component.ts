@@ -124,7 +124,8 @@ const RED = '#f87171';
             } @else if (meta(); as m) {
               <p class="text-sm flex-1 min-w-[16rem]">
                 Meta del parche <strong>{{ m.patch }}</strong> · {{ formatDate(m.fetchedAt * 1000) }}
-                @if (m.stale) { <span class="notice-warn"> · No se pudo actualizar: se muestra la última copia.</span> }
+                @if (m.stale) { <span class="txt-warn"> · No se pudo actualizar: se muestra la última copia.</span> }
+                @if (m.degraded) { <br /><span class="txt-warn">Generado con un modelo de reserva: puede estar desactualizado y los banners no están verificados. Pulsa «Actualizar meta» en unos minutos.</span> }
                 <br />
                 <span style="color: var(--text-secondary)">Fuentes leídas:
                   @for (s of m.sources; track s.url; let last = $last) {
