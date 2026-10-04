@@ -133,9 +133,9 @@ const translations = {
           longDescription: 'Standalone Angular app that lets you pick a question set (multiple sources), choose whether answers are shown instantly or at the end, randomize the order, and track progress with a circular timer and a question navigation panel.'
         },
         'kingdom-hearts-guide': {
-          title: 'Kingdom Hearts Guide',
-          description: 'Interactive Spanish-language guide covering command melding (Birth by Sleep) and Dream Eater creation (Dream Drop Distance), with search and filters.',
-          longDescription: 'A page with two self-contained sections: Birth by Sleep Final Mix command/ability melding, and Dream Drop Distance Dream Eater (Spirit) creation. Item and term names checked against Spanish-language sources (khworld.org, Kingdom Hearts Wiki), with filterable recipe tables by command/Spirit name or ingredient.'
+          title: 'Video Game Guides',
+          description: 'Landing page of interactive Spanish-language guides by series: Kingdom Hearts (command melding and Dream Eaters) and Genshin Impact, where you import your account by UID and an AI suggests teams and who to pull.',
+          longDescription: 'Landing with series/game navigation (Guides / Kingdom Hearts / Dream Drop Distance). The Genshin Impact guide imports your showcase by UID (Enka.Network), compares your characters with the current patch meta, estimates the % improvement of each team and each possible pull, and has a Gemini chat that explains the results. Kingdom Hearts covers Birth by Sleep Final Mix command/ability melding and Dream Drop Distance Dream Eater (Spirit) creation, with names checked against Spanish-language sources (khworld.org, Kingdom Hearts Wiki) and recipe tables filterable by name or ingredient.'
         }
       } as Record<string, ProjectTranslation>
     },
@@ -167,6 +167,20 @@ const translations = {
         'What are the main topics?',
         'Who is the author?'
       ]
+    },
+    guides: {
+      pageTitle: 'Video game guides',
+      breadcrumbLabel: 'Breadcrumb',
+      root: 'Guides',
+      heroTitle: 'Guides',
+      heroHighlight: 'for players',
+      heroText: 'Interactive guides with searchable tables, filters and a short list of recommended picks, so you know where to start. Every data point is checked against real sources and anything unverified is marked as such. Pick a series to see its games.',
+      heroAiText: 'New: the Genshin Impact guide imports your account by UID and an AI compares the current meta with the characters you own.',
+      seriesList: 'Series',
+      guidesCount: 'guides',
+      open: 'Open guide',
+      notFoundTitle: 'Guide not found',
+      backToGuides: 'Back to guides'
     },
     footer: {
       rights: 'All rights reserved.'
@@ -287,9 +301,9 @@ const translations = {
           longDescription: 'App Angular standalone que permite elegir un set de preguntas (varias fuentes), configurar si se muestran las respuestas al instante o al final, aleatorizar el orden, y hacer seguimiento del progreso con un temporizador circular y un panel de navegación de preguntas.'
         },
         'kingdom-hearts-guide': {
-          title: 'Guía de Kingdom Hearts',
-          description: 'Guía interactiva en español con fusión de comandos (Birth by Sleep) y creación de Lucientes (Dream Drop Distance), con buscador y filtros.',
-          longDescription: 'Página con dos secciones autocontenidas: la fusión de comandos y habilidades de Birth by Sleep Final Mix, y la creación de Lucientes (Dream Eaters) de Dream Drop Distance. Nombres de objetos y términos verificados contra fuentes en español (khworld.org, Kingdom Hearts Wiki), con tablas de recetas filtrables por nombre de comando/Luciente o por ingrediente.'
+          title: 'Guías de videojuegos',
+          description: 'Landing de guías interactivas en español, por serie: Kingdom Hearts (fusión de comandos y Lucientes) y Genshin Impact, donde importas tu cuenta por UID y una IA sugiere equipos y a quién sacar.',
+          longDescription: 'Landing con navegación por serie y juego (Guías / Kingdom Hearts / Dream Drop Distance). La guía de Genshin Impact importa la vitrina por UID (Enka.Network), compara tus personajes con el meta del parche, estima el % de mejora de cada equipo y de cada posible pull, y tiene un chat con Gemini que explica los resultados. Kingdom Hearts incluye la fusión de comandos y habilidades de Birth by Sleep Final Mix y la creación de Lucientes (Dream Eaters) de Dream Drop Distance, con nombres verificados contra fuentes en español (khworld.org, Kingdom Hearts Wiki) y tablas filtrables por nombre o ingrediente.'
         }
       } as Record<string, ProjectTranslation>
     },
@@ -321,6 +335,20 @@ const translations = {
         '¿Cuáles son los temas principales?',
         '¿De qué trata este documento?'
       ]
+    },
+    guides: {
+      pageTitle: 'Guías de videojuegos',
+      breadcrumbLabel: 'Ruta de navegación',
+      root: 'Guías',
+      heroTitle: 'Guías',
+      heroHighlight: 'para jugadores',
+      heroText: 'Guías interactivas con tablas buscables, filtros y una lista corta de recomendados para saber por dónde empezar. Cada dato se contrasta con fuentes reales y lo que no se pudo verificar queda marcado como tal. Elige una serie para ver sus juegos.',
+      heroAiText: 'Nueva: la guía de Genshin Impact importa tu cuenta por UID y una IA compara el meta actual con los personajes que tienes.',
+      seriesList: 'Series',
+      guidesCount: 'guías',
+      open: 'Abrir guía',
+      notFoundTitle: 'Guía no encontrada',
+      backToGuides: 'Volver a guías'
     },
     footer: {
       rights: 'Todos los derechos reservados.'
@@ -470,6 +498,20 @@ const translations = {
         'Quais são os principais tópicos?',
         'Quem é o autor?'
       ]
+    },
+    guides: {
+      pageTitle: 'Guias de videogames',
+      breadcrumbLabel: 'Caminho de navegação',
+      root: 'Guias',
+      heroTitle: 'Guias',
+      heroHighlight: 'para jogadores',
+      heroText: 'Guias interativos com tabelas pesquisáveis, filtros e uma lista curta de recomendados para saber por onde começar. Cada dado é conferido com fontes reais e o que não foi verificado fica marcado como tal. Escolha uma série para ver seus jogos.',
+      heroAiText: 'Novo: o guia de Genshin Impact importa sua conta pelo UID e uma IA compara o meta atual com os personagens que você tem.',
+      seriesList: 'Séries',
+      guidesCount: 'guias',
+      open: 'Abrir guia',
+      notFoundTitle: 'Guia não encontrado',
+      backToGuides: 'Voltar aos guias'
     },
     footer: {
       rights: 'Todos os direitos reservados.'

@@ -45,3 +45,29 @@ test('dark mode toggle switches the html class', async ({ page }) => {
     expect(isDark).toBe(!initiallyDark);
   }).toPass();
 });
+
+test.describe('guides landing', () => {
+  test('landing -> expand series -> open game -> breadcrumb returns expanded', async ({ page }) => {
+    await page.goto('/guides');
+    await page.getByRole('button', { name: /Kingdom Hearts/ }).click();
+    await page.getByRole('link', { name: /Dream Drop Distance/ }).click();
+
+    await expect(page).toHaveURL(/\/guides\/kingdom-hearts\/dream-drop-distance$/);
+    await expect(page.locator('iframe')).toHaveAttribute('src', /dream-drop-distance\.html/);
+
+    await page.getByRole('navigation', { name: /breadcrumb|ruta|caminho/i }).getByRole('link', { name: 'Kingdom Hearts' }).click();
+    await expect(page).toHaveURL(/\/guides\?open=kingdom-hearts$/);
+    await expect(page.getByRole('link', { name: /Birth by Sleep/ })).toBeVisible();
+  });
+
+  test('old /guides/kingdom-hearts URL redirects to the expanded series', async ({ page }) => {
+    await page.goto('/guides/kingdom-hearts');
+    await expect(page).toHaveURL(/\/guides\?open=kingdom-hearts$/);
+    await expect(page.getByRole('link', { name: /Dream Drop Distance/ })).toBeVisible();
+  });
+
+  test('unknown guide shows not-found', async ({ page }) => {
+    await page.goto('/guides/kingdom-hearts/nope');
+    await expect(page.getByRole('heading', { name: /no encontrada|not found|não encontrado/i })).toBeVisible();
+  });
+});

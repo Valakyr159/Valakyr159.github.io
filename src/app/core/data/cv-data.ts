@@ -265,16 +265,16 @@ export const CV_DATA: CvData = {
     },
     {
       id: 'kingdom-hearts-guide',
-      title: 'Guía de Kingdom Hearts',
+      title: 'Guías de videojuegos',
       description:
-        'Guía interactiva en español con fusión de comandos (Birth by Sleep) y creación de Lucientes (Dream Drop Distance), con buscador y filtros.',
+        'Landing de guías interactivas en español, por serie: Kingdom Hearts (fusión de comandos y Lucientes) y Genshin Impact, donde importas tu cuenta por UID y una IA sugiere equipos y a quién sacar.',
       longDescription:
-        'Página con dos secciones autocontenidas: la fusión de comandos y habilidades de Birth by Sleep Final Mix, y la creación de Lucientes (Dream Eaters) de Dream Drop Distance. Nombres de objetos y términos verificados contra fuentes en español (khworld.org, Kingdom Hearts Wiki), con tablas de recetas filtrables por nombre de comando/Luciente o por ingrediente.',
-      tags: ['HTML', 'CSS', 'JavaScript'],
+        'Landing con navegación por serie y juego (Guías / Kingdom Hearts / Dream Drop Distance). La guía de Genshin Impact importa la vitrina por UID (Enka.Network), compara tus personajes con el meta del parche, estima el % de mejora de cada equipo y de cada posible pull, y tiene un chat con Gemini que explica los resultados. Kingdom Hearts incluye la fusión de comandos y habilidades de Birth by Sleep Final Mix y la creación de Lucientes (Dream Eaters) de Dream Drop Distance, con nombres verificados contra fuentes en español (khworld.org, Kingdom Hearts Wiki) y tablas filtrables por nombre o ingrediente.',
+      tags: ['Angular', 'TypeScript', 'HTML', 'Gemini'],
       category: 'frontend',
       status: 'live',
       featured: false,
-      route: '/guides/kingdom-hearts',
+      route: '/guides',
       date: '2026',
     },
     {

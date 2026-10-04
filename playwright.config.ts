@@ -8,7 +8,7 @@ export default defineConfig({
     baseURL: 'http://localhost:4300',
   },
   webServer: {
-    command: 'npx http-server dist/portfolio-web/browser -p 4300 --proxy http://localhost:4300?',
+    command: 'npx http-server dist/portfolio-web/browser -p 4300 -d false --proxy http://localhost:4300?',
     url: 'http://localhost:4300',
     reuseExistingServer: !process.env['CI'],
     timeout: 60_000,
