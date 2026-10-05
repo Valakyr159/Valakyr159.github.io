@@ -5,7 +5,7 @@ import { BreadcrumbComponent, BreadcrumbItem } from '../../shared/components/bre
 import { CharacterAvatarComponent, ELEMENT_COLOR } from './character-avatar.component';
 import { accountScore, EngineContext, evaluatePull, pullCandidates, rankPulls, scoreAllTeams } from './genshin-engine';
 import { GenshinAccountService } from './genshin-account.service';
-import { GenshinApiService } from './genshin-api.service';
+import { GenshinApiService, metaIsFresh } from './genshin-api.service';
 import { buildChatContext, ChatMessage, parseBold } from './genshin-chat';
 import { GenshinChatService } from './genshin-chat.service';
 import { Element, Meta, PullCandidateResult, RosterCharacter, ScoredTeam } from './genshin.models';
@@ -14,6 +14,9 @@ type Tab = 'account' | 'teams' | 'pull' | 'chat';
 type Notice = { kind: 'ok' | 'warn' | 'error'; text: string };
 
 const ELEMENTS = Object.keys(ELEMENT_COLOR) as Element[];
+/** While the meta updates the page asks again every few seconds; 150 polls is about 5 minutes. */
+const META_POLL_MS = 2000;
+const MAX_META_POLLS = 150;
 const GREEN = '#4ade80';
 const AMBER = '#fbbf24';
 const RED = '#f87171';
@@ -115,17 +118,23 @@ const RED = '#f87171';
 
         <!-- ======================= EQUIPOS / PULL: meta ======================= -->
         @if (tab() !== 'account') {
-          <section class="panel p-4 mb-6 flex flex-wrap items-center gap-3">
-            @if (metaLoading()) {
-              <p role="status" class="flex items-center gap-3 text-sm">
+          <section class="panel p-4 mb-6" aria-live="polite">
+            @if (metaPhase() !== 'idle') {
+              <p role="status" class="flex items-center gap-3 text-sm" [class.mb-3]="meta()">
                 <span class="spinner" aria-hidden="true"></span>
-                Analizando el meta actual… la primera vez puede tardar hasta un minuto ({{ elapsed() }} s).
+                @if (metaPhase() === 'connecting') {
+                  <span>Conectando con el servidor… si estaba dormido puede tardar hasta un minuto ({{ elapsed() }} s).</span>
+                } @else {
+                  <span>Actualizando el meta con la información más reciente… ({{ elapsed() }} s).
+                    @if (meta()) { Mientras tanto ves el último guardado. } @else { Suele tardar menos de un minuto. }</span>
+                }
               </p>
-            } @else if (meta(); as m) {
-              <p class="text-sm flex-1 min-w-[16rem]">
+            }
+            @if (meta(); as m) {
+              <p class="text-sm">
                 Meta del parche <strong>{{ m.patch }}</strong> · {{ formatDate(m.fetchedAt * 1000) }}
-                @if (m.stale) { <span class="txt-warn"> · No se pudo actualizar: se muestra la última copia.</span> }
-                @if (m.degraded) { <br /><span class="txt-warn">Generado con un modelo de reserva: puede estar desactualizado y los banners no están verificados. Pulsa «Actualizar meta» en unos minutos.</span> }
+                @if (metaNotice(); as n) { <br /><span class="txt-warn">{{ n }} Se muestra la última copia guardada.</span> }
+                @if (m.degraded) { <br /><span class="txt-warn">Generado con un modelo de reserva: puede estar desactualizado y los banners no están verificados. Se reintentará con el modelo principal en unos minutos.</span> }
                 <br />
                 <span style="color: var(--text-secondary)">Fuentes leídas:
                   @for (s of m.sources; track s.url; let last = $last) {
@@ -133,10 +142,11 @@ const RED = '#f87171';
                   }
                   · generado por IA a partir de esas páginas, puede contener errores.</span>
               </p>
-              <button type="button" class="btn btn-ghost" (click)="loadMeta(true)">Actualizar meta</button>
-            } @else {
-              <p class="text-sm flex-1">{{ metaError() ?? 'Todavía no se ha cargado el meta.' }}</p>
-              <button type="button" class="btn" (click)="loadMeta()">Reintentar</button>
+            } @else if (metaPhase() === 'idle') {
+              <div class="flex flex-wrap items-center gap-3">
+                <p class="text-sm flex-1">{{ metaError() ?? 'Todavía no se ha cargado el meta.' }}</p>
+                <button type="button" class="btn" (click)="loadMeta()">Reintentar</button>
+              </div>
             }
           </section>
           @if (metaError() && meta()) { <p class="notice notice-error mb-4" role="alert">{{ metaError() }}</p> }
@@ -399,9 +409,14 @@ export class GenshinComponent implements OnDestroy {
   roster = signal<RosterCharacter[]>([]);
   rosterError = signal<string | null>(null);
   meta = signal<Meta | null>(null);
-  metaLoading = signal(false);
+  /** idle | connecting (waiting for the server, which may be waking up) | updating (the meta is being regenerated) */
+  metaPhase = signal<'idle' | 'connecting' | 'updating'>('idle');
+  metaLoading = computed(() => this.metaPhase() !== 'idle');
   metaError = signal<string | null>(null);
+  /** Why the meta couldn't be refreshed, when an older copy is being shown instead. */
+  metaNotice = signal<string | null>(null);
   elapsed = signal(0);
+  private destroyed = false;
   private timer: ReturnType<typeof setInterval> | null = null;
 
   uidInput = signal('');
@@ -461,33 +476,61 @@ export class GenshinComponent implements OnDestroy {
     this.titleService.setTitle('Mi cuenta · Genshin Impact · Javier Morón');
     this.uidInput.set(this.account.uid() ?? '');
     this.api.roster().then(r => this.roster.set(r), () => this.rosterError.set('No se pudo cargar la lista de personajes.'));
-    // Show a fresh browser-cached meta instantly; the backend is only asked when there is none.
-    this.meta.set(this.api.readCachedMeta());
+    // Show the last meta this browser saw (of any age) right away; the backend is only asked when it is stale.
+    this.meta.set(this.api.readLastMeta());
   }
 
   ngOnDestroy(): void {
+    this.destroyed = true;
     this.stopTimer();
     this.abort?.abort();
   }
 
   select(tab: Tab): void {
     this.tab.set(tab);
-    if (tab !== 'account' && !this.meta() && !this.metaLoading()) void this.loadMeta();
+    if (tab !== 'account') this.ensureMeta();
   }
 
-  async loadMeta(refresh = false): Promise<void> {
-    this.metaLoading.set(true);
+  /** No network at all while the browser copy is fresh: the AI is only ever reached when it is not. */
+  private ensureMeta(): void {
+    const current = this.meta();
+    if (this.metaLoading() || (current && metaIsFresh(current))) return;
+    void this.loadMeta();
+  }
+
+  /**
+   * Asks the backend for the meta and, while it reports `updating`, polls until the new one is ready.
+   * The backend answers instantly from its stored snapshot, so this is cheap and free of AI calls unless
+   * that snapshot is older than 12 h (then exactly one background update starts, shared by every visitor).
+   */
+  async loadMeta(): Promise<void> {
+    if (this.metaLoading()) return;
+    this.metaPhase.set('connecting');
     this.metaError.set(null);
+    this.metaNotice.set(null);
     this.elapsed.set(0);
     this.stopTimer();
     this.timer = setInterval(() => this.elapsed.update(s => s + 1), 1000);
     try {
-      this.meta.set(await this.api.meta(refresh));
+      for (let poll = 0; poll < MAX_META_POLLS && !this.destroyed; poll++) {
+        const state = await this.api.metaState();
+        if (state.meta) this.meta.set(state.meta); // an older copy is shown while the new one is generated
+        if (state.status === 'updating') {
+          this.metaPhase.set('updating');
+          this.elapsed.set(state.elapsed ?? 0); // the server's clock: the same for every visitor
+          await new Promise(resolve => setTimeout(resolve, META_POLL_MS));
+          continue;
+        }
+        if (state.status === 'stale') this.metaNotice.set(state.message ?? 'No se pudo actualizar el meta.');
+        if (state.status === 'unavailable') this.metaError.set(state.message ?? 'El meta no está disponible ahora mismo.');
+        return;
+      }
+      if (!this.destroyed) this.metaError.set('La actualización está tardando más de lo normal. Vuelve a intentarlo en unos minutos.');
     } catch (e) {
       // Keep whatever meta is already on screen; only report the failure.
       this.metaError.set(e instanceof Error ? e.message : 'No se pudo obtener el meta.');
     } finally {
-      this.metaLoading.set(false);
+      this.metaPhase.set('idle');
       this.stopTimer();
     }
   }

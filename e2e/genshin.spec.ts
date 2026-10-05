@@ -24,13 +24,18 @@ const meta = {
   }],
 };
 
+const META_KEY = 'genshin.meta.v1';
+const seedMeta = (page: Page, value: unknown) =>
+  page.addInitScript(([k, v]) => localStorage.setItem(k as string, v as string), [META_KEY, JSON.stringify(value)]);
+const ago = (hours: number) => Math.floor(Date.now() / 1000 - hours * 3600);
+
 async function mockBackend(page: Page, opts: { showcase?: boolean } = {}) {
   await page.route('https://enka.network/**', r => r.abort());
   await page.route('**/genshin/profile/*', r => r.fulfill({ json: {
     uid: '618285856', nickname: 'Tester', adventureRank: 60, ttl: 60, showcaseVisible: opts.showcase ?? true,
     characters: opts.showcase === false ? [] : [{ id: FURINA, level: 90, cons: 2 }, { id: NAHIDA, level: 80, cons: 0 }],
   } }));
-  await page.route('**/genshin/meta**', r => r.fulfill({ json: meta }));
+  await page.route('**/genshin/meta**', r => r.fulfill({ json: { status: 'fresh', meta } }));
 }
 
 test.describe('genshin guide', () => {
@@ -156,5 +161,124 @@ test.describe('genshin guide', () => {
     await page.getByRole('button', { name: 'Enviar' }).click();
     await expect(page.getByRole('log')).toContainText('<img src=x');
     expect(await page.evaluate(() => (window as unknown as { __xss?: number }).__xss)).toBeUndefined();
+  });
+
+  test('no AI-related request at all while the browser copy of the meta is fresh, and there is no refresh button', async ({ page }) => {
+    await mockBackend(page);
+    await seedMeta(page, { ...meta, fetchedAt: ago(1) });
+    const metaRequests: string[] = [];
+    page.on('request', r => r.url().includes('/genshin/meta') && metaRequests.push(r.method()));
+    await page.goto('/guides/genshin-impact/mi-cuenta');
+    await page.getByRole('tab', { name: 'Mejores equipos' }).click();
+    await page.getByRole('tab', { name: '¿A quién sacar?' }).click();
+    await page.getByRole('button', { name: /Vesna/ }).first().click(); // planner interaction
+    await page.getByRole('tab', { name: 'Chat con IA' }).click();
+    await expect(page.getByText(/Meta del parche 7.1/)).toBeVisible();
+    expect(metaRequests).toEqual([]);
+    await expect(page.getByRole('button', { name: /Actualizar meta/ })).toHaveCount(0);
+  });
+
+  test('marking characters and using the planner never hits the backend', async ({ page }) => {
+    await mockBackend(page);
+    await seedMeta(page, { ...meta, fetchedAt: ago(1) });
+    const calls: string[] = [];
+    page.on('request', r => /\/genshin\/(meta|chat|profile)/.test(r.url()) && calls.push(r.url()));
+    await page.goto('/guides/genshin-impact/mi-cuenta');
+    await page.getByRole('button', { name: 'Furina (no lo tienes)' }).click();
+    await page.getByRole('button', { name: 'Nahida (no lo tienes)' }).click();
+    await page.getByRole('tab', { name: '¿A quién sacar?' }).click();
+    await page.getByRole('button', { name: /Vesna/ }).first().click();
+    await page.getByLabel('Comparar otro personaje').selectOption({ label: 'Bennett' });
+    await expect(page.getByRole('heading', { name: /Equipos del meta con Bennett/ })).toBeVisible();
+    expect(calls).toEqual([]);
+  });
+
+  test('an expired copy stays visible while the update runs, with a live timer, then is replaced', async ({ page }) => {
+    await page.route('https://enka.network/**', r => r.abort());
+    await seedMeta(page, { ...meta, patch: '7.0', fetchedAt: ago(14) }); // older than 12 h
+    let polls = 0;
+    await page.route('**/genshin/meta**', r => {
+      polls++;
+      r.fulfill({ json: polls < 3
+        ? { status: 'updating', elapsed: polls === 1 ? 4 : 6, meta: { ...meta, patch: '7.0', fetchedAt: ago(14) } }
+        : { status: 'fresh', meta } });
+    });
+    await page.goto('/guides/genshin-impact/mi-cuenta');
+    await page.getByRole('tab', { name: 'Mejores equipos' }).click();
+
+    await expect(page.getByText(/Actualizando el meta con la información más reciente… \(4 s\)/)).toBeVisible();
+    await expect(page.getByText('Mientras tanto ves el último guardado.')).toBeVisible();
+    await expect(page.getByText(/Meta del parche 7.0/)).toBeVisible();          // the old data is still on screen
+    await expect(page.getByRole('listitem').filter({ hasText: 'Vesna Swirl' })).toBeVisible();
+
+    await expect(page.getByText(/Meta del parche 7.1/)).toBeVisible({ timeout: 10_000 }); // swapped when ready
+    await expect(page.getByText(/Actualizando el meta/)).toHaveCount(0);
+    expect(polls).toBe(3);
+  });
+
+  test('first visit with no copy: shows the update message and timer instead of empty content, then the teams', async ({ page }) => {
+    await page.route('https://enka.network/**', r => r.abort());
+    let polls = 0;
+    await page.route('**/genshin/meta**', r => {
+      polls++;
+      r.fulfill({ json: polls === 1 ? { status: 'updating', elapsed: 2, meta: null } : { status: 'fresh', meta } });
+    });
+    await page.goto('/guides/genshin-impact/mi-cuenta');
+    await page.getByRole('tab', { name: 'Mejores equipos' }).click();
+    await expect(page.getByText(/Actualizando el meta con la información más reciente… \(2 s\)/)).toBeVisible();
+    await expect(page.getByText('Suele tardar menos de un minuto.')).toBeVisible();
+    await expect(page.getByRole('listitem').filter({ hasText: 'Vesna Swirl' })).toHaveCount(0);
+    await expect(page.getByRole('listitem').filter({ hasText: 'Vesna Swirl' })).toBeVisible({ timeout: 10_000 });
+  });
+
+  test('a slow server shows "connecting" first, with the timer running', async ({ page }) => {
+    await page.route('https://enka.network/**', r => r.abort());
+    await page.route('**/genshin/meta**', async r => {
+      await new Promise(resolve => setTimeout(resolve, 2500)); // Render waking up
+      await r.fulfill({ json: { status: 'fresh', meta } });
+    });
+    await page.goto('/guides/genshin-impact/mi-cuenta');
+    await page.getByRole('tab', { name: 'Mejores equipos' }).click();
+    await expect(page.getByText(/Conectando con el servidor… si estaba dormido puede tardar hasta un minuto \([12] s\)/)).toBeVisible();
+    await expect(page.getByText(/Meta del parche 7.1/)).toBeVisible({ timeout: 10_000 });
+  });
+
+  test('when the update cannot run it shows the last copy with the reason, not an empty page', async ({ page }) => {
+    await page.route('https://enka.network/**', r => r.abort());
+    await page.route('**/genshin/meta**', r => r.fulfill({ json: {
+      status: 'stale', meta: { ...meta, patch: '7.0', fetchedAt: ago(20) }, message: 'Se alcanzó el límite diario de actualizaciones del meta.' } }));
+    await page.goto('/guides/genshin-impact/mi-cuenta');
+    await page.getByRole('tab', { name: 'Mejores equipos' }).click();
+    await expect(page.getByText(/Se alcanzó el límite diario de actualizaciones del meta\. Se muestra la última copia guardada\./)).toBeVisible();
+    await expect(page.getByText(/Meta del parche 7.0/)).toBeVisible();
+    await expect(page.getByRole('listitem').filter({ hasText: 'Vesna Swirl' })).toBeVisible();
+  });
+
+  test('unavailable (503): a clear message and Retry, which recovers on the next try', async ({ page }) => {
+    await page.route('https://enka.network/**', r => r.abort());
+    let calls = 0;
+    await page.route('**/genshin/meta**', r => {
+      calls++;
+      r.fulfill(calls === 1
+        ? { status: 503, json: { status: 'unavailable', meta: null, message: 'No se pudo actualizar el meta; se reintentará en unos minutos.' } }
+        : { json: { status: 'fresh', meta } });
+    });
+    await page.goto('/guides/genshin-impact/mi-cuenta');
+    await page.getByRole('tab', { name: 'Mejores equipos' }).click();
+    await expect(page.getByText('No se pudo actualizar el meta; se reintentará en unos minutos.')).toBeVisible();
+    await page.getByRole('button', { name: 'Reintentar' }).click();
+    await expect(page.getByText(/Meta del parche 7.1/)).toBeVisible();
+  });
+
+  test('chat at its daily limit explains it and the rest of the guide keeps working', async ({ page }) => {
+    await mockBackend(page);
+    await page.route('**/genshin/chat', r => r.fulfill({ status: 429, json: { error: 'daily_limit', message: 'El chat alcanzó su límite diario. El resto de la guía sigue funcionando; vuelve mañana.' } }));
+    await page.goto('/guides/genshin-impact/mi-cuenta');
+    await page.getByRole('tab', { name: 'Chat con IA' }).click();
+    await page.getByLabel('Tu pregunta').fill('hola');
+    await page.getByRole('button', { name: 'Enviar' }).click();
+    await expect(page.getByRole('alert')).toContainText('límite diario');
+    await page.getByRole('tab', { name: 'Mejores equipos' }).click();
+    await expect(page.getByRole('listitem').filter({ hasText: 'Vesna Swirl' })).toBeVisible();
   });
 });
