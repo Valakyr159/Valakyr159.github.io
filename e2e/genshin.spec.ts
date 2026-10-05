@@ -99,7 +99,7 @@ test.describe('genshin guide', () => {
     await expect(team).toContainText('te falta');       // Vesna and Bennett
 
     await page.getByRole('tab', { name: '¿A quién sacar?' }).click();
-    await expect(page.getByRole('heading', { name: 'En banner ahora' })).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Banners y novedades' })).toBeVisible();
     await page.getByRole('button', { name: /Vesna/ }).first().click();
     await expect(page.getByRole('heading', { name: /Equipos del meta con Vesna/ })).toBeVisible();
     await expect(page.getByText(/de [\d.]+ a [\d.]+\)/)).toBeVisible();
@@ -280,5 +280,62 @@ test.describe('genshin guide', () => {
     await expect(page.getByRole('alert')).toContainText('límite diario');
     await page.getByRole('tab', { name: 'Mejores equipos' }).click();
     await expect(page.getByRole('listitem').filter({ hasText: 'Vesna Swirl' })).toBeVisible();
+  });
+
+  test('a NEW character no source covers shows "Sin datos del meta", never a made-up percentage', async ({ page }) => {
+    await page.route('https://enka.network/**', r => r.abort());
+    // Vesna is covered (she has a team); Vodyanitsa is NEW on genshin.gg but on no tier list or team yet.
+    const noData = { ...meta, banners: [VESNA], newCharacters: [VODYANITSA],
+      characters: meta.characters.filter(c => c.id !== VODYANITSA), teams: [meta.teams[0]] };
+    await page.route('**/genshin/meta**', r => r.fulfill({ json: { status: 'fresh', meta: noData } }));
+    await page.goto('/guides/genshin-impact/mi-cuenta');
+    await page.getByRole('button', { name: 'Furina (no lo tienes)' }).click();
+    await page.getByRole('button', { name: 'Nahida (no lo tienes)' }).click();
+    await page.getByRole('tab', { name: '¿A quién sacar?' }).click();
+
+    await expect(page.getByRole('heading', { name: 'Banners y novedades' })).toBeVisible();
+    const vodyCard = page.getByRole('button', { name: /Vodyanitsa/ }).first();  // listed because it is NEW, not a banner
+    await expect(vodyCard).toContainText('Sin datos del meta');
+    await expect(vodyCard).toContainText('aún sin datos en las fuentes');
+    await expect(vodyCard).not.toContainText('%');
+    await expect(page.getByRole('button', { name: /Vesna/ }).first()).toContainText('%');  // covered ones keep their estimate
+
+    await vodyCard.click();
+    await expect(page.getByText(/Ninguna de las fuentes consultadas tiene todavía datos de Vodyanitsa/)).toBeVisible();
+    await expect(page.getByText(/Esto no significa que sea una mala opción/)).toBeVisible();
+    await expect(page.getByText(/\(de [\d.]+ a [\d.]+\)/)).toHaveCount(0);  // no "from X to Y" for it
+  });
+
+  test('a team built from a character page is shown as "Sin rankear", not as a tier', async ({ page }) => {
+    await page.route('https://enka.network/**', r => r.abort());
+    const withPage = { ...meta, teams: [meta.teams[0], { ...meta.teams[1], name: 'Equipo de ficha', unranked: true, note: 'De la ficha del personaje en genshin.gg: aún no tiene tier oficial.' }] };
+    await page.route('**/genshin/meta**', r => r.fulfill({ json: { status: 'fresh', meta: withPage } }));
+    await page.goto('/guides/genshin-impact/mi-cuenta');
+    await page.getByRole('tab', { name: 'Mejores equipos' }).click();
+    const ranked = page.getByRole('listitem').filter({ hasText: 'Vesna Swirl' });
+    const unranked = page.getByRole('listitem').filter({ hasText: 'Equipo de ficha' });
+    await expect(unranked.locator('.tier')).toHaveText('Sin rankear');
+    await expect(unranked.locator('.tier')).toHaveAttribute('title', /no tiene tier oficial/);
+    await expect(ranked.locator('.tier')).toHaveText('S');  // ranked teams keep their letter
+    await expect(unranked).toContainText('aún no tiene tier oficial');
+  });
+
+  test('the chat is told which characters have no data, so it cannot present them as bad picks', async ({ page }) => {
+    await page.route('https://enka.network/**', r => r.abort());
+    const noData = { ...meta, banners: [VESNA], newCharacters: [VODYANITSA],
+      characters: meta.characters.filter(c => c.id !== VODYANITSA), teams: [meta.teams[0]] };
+    await page.route('**/genshin/meta**', r => r.fulfill({ json: { status: 'fresh', meta: noData } }));
+    let context = '';
+    await page.route('**/genshin/chat', r => {
+      context = r.request().postDataJSON().context;
+      r.fulfill({ status: 200, contentType: 'text/event-stream', body: 'data: {"text":"ok"}\n\ndata: [DONE]\n\n' });
+    });
+    await page.goto('/guides/genshin-impact/mi-cuenta');
+    await page.getByRole('tab', { name: 'Chat con IA' }).click();
+    await page.getByLabel('Tu pregunta').fill('¿Vesna o Vodyanitsa?');
+    await page.getByRole('button', { name: 'Enviar' }).click();
+    await expect(page.getByRole('log')).toContainText('ok');
+    expect(context).toContain('Vodyanitsa [nuevo]: sin datos del meta todavía');
+    expect(context).toContain('NO hay estimación de su mejora');
   });
 });

@@ -178,7 +178,7 @@ const RED = '#f87171';
           </p>
 
           @if (bannerPulls().length) {
-            <h2 class="font-display font-bold text-lg mb-2">En banner ahora</h2>
+            <h2 class="font-display font-bold text-lg mb-2">Banners y novedades</h2>
             <ul class="grid gap-3 sm:grid-cols-2 mb-6">
               @for (r of bannerPulls(); track r.id) {
                 <li><ng-container *ngTemplateOutlet="pullCard; context: { $implicit: r }" /></li>
@@ -210,7 +210,7 @@ const RED = '#f87171';
                   <p class="text-sm" style="color: var(--text-secondary)">
                     {{ char(r.id).element }} · {{ char(r.id).weapon }} · {{ char(r.id).rarity }}★ —
                     <strong [class]="pctClass(r)">{{ pct(r) }}</strong>
-                    (de {{ currentScore() }} a {{ r.newScore }})
+                    @if (r.inMeta) { (de {{ currentScore() }} a {{ r.newScore }}) }
                   </p>
                 </div>
               </div>
@@ -221,6 +221,11 @@ const RED = '#f87171';
                     <li class="panel p-4"><ng-container *ngTemplateOutlet="teamCard; context: { $implicit: t }" /></li>
                   }
                 </ul>
+              } @else if (!r.inMeta) {
+                <p class="notice notice-warn">
+                  Ninguna de las fuentes consultadas tiene todavía datos de {{ char(r.id).name.es }} (puede ser muy reciente),
+                  así que no se puede estimar cuánto mejoraría tu cuenta. Esto no significa que sea una mala opción.
+                </p>
               } @else {
                 <p style="color: var(--text-secondary)">Ningún equipo del meta actual lo incluye.</p>
               }
@@ -285,7 +290,7 @@ const RED = '#f87171';
               (DPS principal 40 %, DPS secundario 25 %, soporte 20 %, sanador 15 %) por la calidad de quien lo ocupa
               (nivel y constelaciones; 0,9 si no se conoce el nivel, lo que equivale a nivel 60). Si te falta un personaje, lo cubre el mejor que
               tengas con el mismo rol según el meta, con un 70 % de eficacia (80 % más si cambia el elemento del DPS).
-              El resultado se multiplica por el tier del equipo (S 1,0 · A 0,85 · B 0,7). El % de mejora compara la media
+              El resultado se multiplica por el tier del equipo (S 1,0 · A 0,85 · B 0,7). Los equipos que solo salen en la ficha de un personaje recién lanzado aún no tienen tier oficial: se marcan «Sin rankear» y se puntúan como A. Si ninguna fuente tiene datos de un personaje, se indica «Sin datos del meta» en vez de un porcentaje. El % de mejora compara la media
               de tus {{ topN }} mejores equipos antes y después de conseguir al personaje. El meta lo extrae una IA de
               las páginas citadas y se valida contra la lista de personajes del juego.
             </p>
@@ -298,7 +303,11 @@ const RED = '#f87171';
     <ng-template #teamCard let-t>
       <div class="flex items-center justify-between gap-2 mb-1">
         <h3 class="font-display font-bold">{{ t.team.name }}</h3>
-        <span class="tier" [attr.data-tier]="t.team.tier">{{ t.team.tier }}</span>
+        @if (t.team.unranked) {
+          <span class="tier" data-tier="U" title="Equipo de la ficha del personaje: aún no tiene tier oficial. Se puntúa como A.">Sin rankear</span>
+        } @else {
+          <span class="tier" [attr.data-tier]="t.team.tier">{{ t.team.tier }}</span>
+        }
       </div>
       <p class="text-xs mb-3" style="color: var(--text-secondary)">{{ t.team.reaction }} · {{ t.ownedCount }}/4 los tienes</p>
       <div class="flex gap-3 mb-3">
@@ -329,7 +338,7 @@ const RED = '#f87171';
           <app-character-avatar [character]="char(r.id)" [size]="52" />
           <div class="min-w-0">
             <div class="font-semibold truncate">{{ char(r.id).name.es }}</div>
-            <div class="text-xs" style="color: var(--text-secondary)">{{ char(r.id).element }} · {{ r.unlocked.length }} equipos del meta</div>
+            <div class="text-xs" style="color: var(--text-secondary)">{{ char(r.id).element }} · @if (r.inMeta) { {{ r.unlocked.length }} equipos del meta } @else { aún sin datos en las fuentes }</div>
           </div>
           <strong class="ml-auto" [class]="pctClass(r)">{{ pct(r) }}</strong>
         </div>
@@ -361,6 +370,7 @@ const RED = '#f87171';
     .bar-fill { height: 100%; border-radius: 999px; background: var(--accent-gradient); transition: width .3s; }
     .tier { font-weight: 800; font-size: 12px; padding: 2px 8px; border-radius: 6px; border: 1px solid var(--border-bright); }
     .tier[data-tier="S"] { color: #b45309; border-color: #f59e0b; }
+    .tier[data-tier="U"] { color: var(--text-secondary); border-style: dashed; font-weight: 600; }
     :host-context(html.dark) .tier[data-tier="S"] { color: #fcd34d; }
     /* Text colors are darker on the light theme so they keep >= 4.5:1 contrast on white. */
     .txt-pos { color: #15803d; } .txt-neg { color: #b91c1c; } .txt-warn { color: #b45309; } .txt-zero { color: var(--text-secondary); }
@@ -459,13 +469,12 @@ export class GenshinComponent implements OnDestroy {
   currentScore = computed(() => accountScore(this.scored()));
 
   private ranking = computed<PullCandidateResult[]>(() => { const c = this.ctx(); return c ? rankPulls(pullCandidates(c), c) : []; });
-  bannerPulls = computed(() => {
-    const banners = new Set(this.meta()?.banners ?? []);
-    return this.ranking().filter(r => banners.has(r.id));
-  });
+  /** Banner characters plus the ones flagged NEW (a more reliable signal than the banners the model read). */
+  private featured = computed(() => new Set([...(this.meta()?.banners ?? []), ...(this.meta()?.newCharacters ?? [])]));
+  bannerPulls = computed(() => this.ranking().filter(r => this.featured().has(r.id)));
   topPulls = computed(() => {
-    const banners = new Set(this.meta()?.banners ?? []);
-    return this.ranking().filter(r => !banners.has(r.id)).slice(0, 6);
+    const featured = this.featured();
+    return this.ranking().filter(r => !featured.has(r.id) && r.inMeta).slice(0, 6);
   });
   selectedResult = computed<PullCandidateResult | null>(() => {
     const id = this.selectedPull(), c = this.ctx();
@@ -608,14 +617,19 @@ export class GenshinComponent implements OnDestroy {
 
   color(el: Element): string { return ELEMENT_COLOR[el]; }
   min100(n: number): number { return Math.max(0, Math.min(100, n)); }
-  barPct(r: PullCandidateResult): number { return r.improvementPct === null ? 100 : Math.max(0, Math.min(100, r.improvementPct)); }
+  barPct(r: PullCandidateResult): number {
+    if (!r.inMeta) return 0;
+    return r.improvementPct === null ? 100 : Math.max(0, Math.min(100, r.improvementPct));
+  }
   pct(r: PullCandidateResult): string {
+    if (!r.inMeta) return 'Sin datos del meta';
     if (r.improvementPct === null) return 'Nuevo equipo';
     if (r.improvementPct === 0) return 'Sin cambio';
     return `${r.improvementPct > 0 ? '+' : ''}${r.improvementPct}%`;
   }
   /** Green for a gain, red for a loss, neutral when nothing changes (text colors live in the styles, per theme). */
   pctClass(r: PullCandidateResult): string {
+    if (!r.inMeta) return 'txt-zero';
     return r.improvementPct === null || r.improvementPct > 0 ? 'txt-pos' : r.improvementPct < 0 ? 'txt-neg' : 'txt-zero';
   }
   ownedInfo(id: number): string {

@@ -28,12 +28,16 @@ export interface MetaCharacter {
   id: number;
   role: Role;
   tier: Tier;
+  /** Taken from the character's own page, which shows no tier: `tier` is a stand-in (A), not an official ranking. */
+  unranked?: boolean;
 }
 
 export interface MetaTeam {
   name: string;
   reaction: string;
   tier: Tier;
+  /** Built from a character page, which shows no tier: `tier` is a stand-in (A), not an official ranking. */
+  unranked?: boolean;
   members: { id: number; role: Role }[];
   note: string;
 }
@@ -49,6 +53,8 @@ export interface Meta {
   characters: MetaCharacter[];
   teams: MetaTeam[];
   banners: number[];
+  /** Characters flagged NEW on genshin.gg: a plain marker, more reliable than the banners the model reads. */
+  newCharacters?: number[];
   sources: MetaSource[];
   model: string;
   fetchedAt: number;
@@ -105,6 +111,8 @@ export interface ScoredTeam {
 
 export interface PullCandidateResult {
   id: number;
+  /** False when no source has any data on this character yet (very new): the estimate would mean nothing. */
+  inMeta: boolean;
   /** Average score of the best teams after pulling the candidate. */
   newScore: number;
   /** Percent change over the current score. `null` when there is no current score to compare against. */

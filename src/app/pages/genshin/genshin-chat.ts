@@ -31,6 +31,9 @@ export function buildChatContext(ctx: EngineContext): string {
     lines.push('AVISO: este meta lo generó el modelo de reserva y puede estar desactualizado (por ejemplo, faltar personajes nuevos). Dilo si el usuario depende de ello.');
   }
   lines.push(`Banners actuales: ${ctx.meta.banners.map(name).join(', ') || 'no verificados'}.`);
+  const fresh = (ctx.meta.newCharacters ?? []).filter(id => ctx.roster.has(id));
+  if (fresh.length) lines.push(`Personajes nuevos (marcados NEW en genshin.gg): ${fresh.map(name).join(', ')}.`);
+  lines.push('Un personaje «sin datos del meta» es muy reciente y ninguna fuente lo incluye aún: NO hay estimación de su mejora. Dilo así; no afirmes que no mejora ni que sea mala opción.');
   lines.push(`Nivel actual de la cuenta (media de sus ${TOP_N} mejores equipos): ${accountScore(scored)}.`);
 
   lines.push('', 'Mejores equipos del meta para el jugador:');
@@ -40,18 +43,26 @@ export function buildChatContext(ctx: EngineContext): string {
       if (s.status === 'substitute') return `${name(s.wantedId)} (le falta; lo cubre ${name(s.fillId!)})`;
       return `${name(s.wantedId)} (le falta)`;
     });
-    lines.push(`- ${t.team.name} [${t.team.tier}] ${t.team.reaction}: puntuación ${t.score}. ${members.join('; ')}.`);
+    const tier = t.team.unranked ? 'sin tier oficial, de la ficha del personaje, puntuado como A' : t.team.tier;
+    lines.push(`- ${t.team.name} [${tier}] ${t.team.reaction}: puntuación ${t.score}. ${members.join('; ')}.`);
   }
 
   const ids = pullCandidates(ctx);
   const banners = new Set(ctx.meta.banners);
+  const novelties = new Set(fresh);
+  const featured = (id: number) => banners.has(id) || novelties.has(id);
   const ranked = rankPulls(ids, ctx);
-  const shown = [...ranked.filter(r => banners.has(r.id)), ...ranked.filter(r => !banners.has(r.id)).slice(0, MAX_PULLS)];
+  const shown = [...ranked.filter(r => featured(r.id)), ...ranked.filter(r => !featured(r.id) && r.inMeta).slice(0, MAX_PULLS)];
   lines.push('', 'Mejora estimada si el jugador consigue a cada personaje (a C0):');
   for (const r of shown) {
+    const tag = banners.has(r.id) ? ' [en banner]' : novelties.has(r.id) ? ' [nuevo]' : '';
+    if (!r.inMeta) {
+      lines.push(`- ${name(r.id)}${tag}: sin datos del meta todavía (ninguna fuente lo incluye aún; no hay estimación).`);
+      continue;
+    }
     const pct = r.improvementPct === null ? 'primer equipo jugable' : `${r.improvementPct > 0 ? '+' : ''}${r.improvementPct}%`;
     const teams = r.unlocked.slice(0, 3).map(t => t.team.name).join(', ') || 'ningún equipo del meta lo incluye';
-    lines.push(`- ${name(r.id)}${banners.has(r.id) ? ' [en banner]' : ''}: ${pct} (puntuación ${r.newScore}). Equipos: ${teams}.`);
+    lines.push(`- ${name(r.id)}${tag}: ${pct} (puntuación ${r.newScore}). Equipos: ${teams}.`);
   }
 
   const text = lines.join('\n');

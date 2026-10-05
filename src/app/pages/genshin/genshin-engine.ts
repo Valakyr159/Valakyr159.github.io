@@ -103,6 +103,11 @@ export function improvement(before: number, after: number): number | null {
   return before > 0 ? round1(((after - before) / before) * 100) : null;
 }
 
+/** True when the meta says anything at all about the character (tier list or any team). */
+export function hasMetaData(id: number, meta: Meta): boolean {
+  return meta.characters.some(c => c.id === id) || meta.teams.some(t => t.members.some(m => m.id === id));
+}
+
 /** Evaluates pulling `candidateId` (at C0, level unknown) on top of the current account. */
 export function evaluatePull(candidateId: number, ctx: EngineContext): PullCandidateResult {
   const before = accountScore(scoreAllTeams(ctx));
@@ -112,15 +117,16 @@ export function evaluatePull(candidateId: number, ctx: EngineContext): PullCandi
   const after = accountScore(scored);
   return {
     id: candidateId,
+    inMeta: hasMetaData(candidateId, ctx.meta),
     newScore: after,
     improvementPct: improvement(before, after),
     unlocked: scored.filter(t => t.team.members.some(m => m.id === candidateId)),
   };
 }
 
-/** Candidates worth comparing: the banner characters (not owned) plus the meta's S-tier ones. */
+/** Candidates worth comparing: banner and NEW characters (not owned) plus the meta's S-tier ones. */
 export function pullCandidates(ctx: EngineContext): number[] {
-  const ids = new Set<number>(ctx.meta.banners);
+  const ids = new Set<number>([...ctx.meta.banners, ...(ctx.meta.newCharacters ?? [])]);
   for (const c of ctx.meta.characters) if (c.tier === 'S') ids.add(c.id);
   return [...ids].filter(id => ctx.roster.has(id) && !ctx.owned.has(id));
 }
@@ -128,8 +134,10 @@ export function pullCandidates(ctx: EngineContext): number[] {
 export function rankPulls(ids: number[], ctx: EngineContext): PullCandidateResult[] {
   return ids
     .map(id => evaluatePull(id, ctx))
-    // null (no baseline) sorts first: the account has nothing playable yet.
-    .sort((a, b) => (b.improvementPct ?? Infinity) - (a.improvementPct ?? Infinity) || b.newScore - a.newScore);
+    // Characters the meta knows nothing about go last: their "0%" is absence of data, not a verdict.
+    // Among the rest, null (no baseline) sorts first: the account has nothing playable yet.
+    .sort((a, b) => Number(b.inMeta) - Number(a.inMeta)
+      || (b.improvementPct ?? Infinity) - (a.improvementPct ?? Infinity) || b.newScore - a.newScore);
 }
 
 function round1(n: number): number {

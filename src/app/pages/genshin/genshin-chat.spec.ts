@@ -40,6 +40,22 @@ describe('buildChatContext', () => {
     expect(text).not.toContain('AVISO');
   });
 
+  it('says "no data yet" (not "no improvement") for a NEW character no source covers, and lists the NEW ones', () => {
+    const noData: Meta = { ...meta, banners: [1], newCharacters: [5], characters: meta.characters.filter(c => c.id !== 5) };
+    const t = buildChatContext({ meta: noData, roster: ROSTER, owned });
+    expect(t).toContain('Personajes nuevos (marcados NEW en genshin.gg): Vodyanitsa');
+    expect(t).toContain('- Vodyanitsa [nuevo]: sin datos del meta todavía');
+    expect(t).not.toMatch(/Vodyanitsa \[nuevo\]: (\+|-)?\d/);                  // no percentage invented for it
+    expect(t).toContain('NO hay estimación de su mejora');                      // the standing instruction to the model
+  });
+
+  it('labels teams built from a character page as unranked instead of claiming a tier', () => {
+    const withPage: Meta = { ...meta, teams: [{ ...meta.teams[0], tier: 'A', unranked: true }] };
+    const t = buildChatContext({ meta: withPage, roster: ROSTER, owned });
+    expect(t).toContain('[sin tier oficial, de la ficha del personaje, puntuado como A]');
+    expect(t).not.toContain('Vesna Swirl [A]');
+  });
+
   it('never exceeds the backend context limit', () => {
     const many = new Map<number, RosterCharacter>();
     for (let i = 1; i <= 600; i++) many.set(i, ch(i, 'Personaje con un nombre muy largo número ' + i, 'Geo'));

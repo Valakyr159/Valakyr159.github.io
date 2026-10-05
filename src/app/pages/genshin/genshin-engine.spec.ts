@@ -1,5 +1,5 @@
 import {
-  accountScore, evaluatePull, improvement, power, pullCandidates, rankPulls, scoreAllTeams, scoreTeam,
+  accountScore, evaluatePull, hasMetaData, improvement, power, pullCandidates, rankPulls, scoreAllTeams, scoreTeam,
 } from './genshin-engine';
 import { Element, Meta, OwnedCharacter, RosterCharacter, Role, Tier } from './genshin.models';
 
@@ -7,7 +7,8 @@ function ch(id: number, element: Element): RosterCharacter {
   return { id, key: `c${id}`, name: { en: `C${id}`, es: `C${id}`, pt: `C${id}` }, element, weapon: 'Sword', rarity: 5, icon: `i${id}`, sideIcon: `s${id}` };
 }
 // 1 carry (Pyro), 2 sub-DPS, 3 support, 4 healer; 5 = alternative Pyro carry; 6 = Hydro carry; 7 = alt healer
-const ROSTER = new Map([ch(1, 'Pyro'), ch(2, 'Hydro'), ch(3, 'Anemo'), ch(4, 'Dendro'), ch(5, 'Pyro'), ch(6, 'Hydro'), ch(7, 'Hydro')].map(c => [c.id, c]));
+// 8 and 9: characters no source mentions (very new)
+const ROSTER = new Map([ch(1, 'Pyro'), ch(2, 'Hydro'), ch(3, 'Anemo'), ch(4, 'Dendro'), ch(5, 'Pyro'), ch(6, 'Hydro'), ch(7, 'Hydro'), ch(8, 'Cryo'), ch(9, 'Geo')].map(c => [c.id, c]));
 
 function meta(over: Partial<Meta> = {}): Meta {
   const m = (id: number, role: Role) => ({ id, role });
@@ -144,6 +145,51 @@ describe('genshin-engine', () => {
       const c = ctx([2, 3, 4].map(maxed));
       const ranked = rankPulls([5, 1], c); // S-tier carry beats the A-tier one
       expect(ranked.map(r => r.id)).toEqual([1, 5]);
+    });
+  });
+
+  describe('characters the sources know nothing about', () => {
+    it('hasMetaData is true for tier-listed or teamed characters and false otherwise', () => {
+      expect(hasMetaData(1, meta())).toBe(true);   // in the tier list and a team
+      expect(hasMetaData(7, meta())).toBe(true);   // tier list only
+      expect(hasMetaData(8, meta())).toBe(false);  // nowhere
+    });
+
+    it('flags a candidate with no data so the UI does not present its 0% as a verdict', () => {
+      const c = ctx([2, 3, 4].map(maxed));
+      expect(evaluatePull(1, c).inMeta).toBe(true);
+      const unknown = evaluatePull(8, c);
+      expect(unknown.inMeta).toBe(false);
+      expect(unknown.unlocked).toEqual([]);
+    });
+
+    it('offers NEW characters as candidates even when they are not banners, but never owned ones', () => {
+      const m = meta({ banners: [5], newCharacters: [8, 9, 1] });
+      expect(pullCandidates(ctx([1].map(maxed), m)).sort()).toEqual([2, 3, 4, 5, 6, 8, 9]);
+    });
+
+    it('ranks a character without data after one with data when both show the same 0% (only inMeta breaks the tie)', () => {
+      // The account already has the perfect team, so neither 7 (a B-tier healer) nor 8 (unknown) improves it: both are 0%,
+      // with the same score. Without the inMeta rule the sort is stable and keeps the input order [8, 7].
+      const full = ctx([1, 2, 3, 4].map(maxed));
+      const [seven, eight] = [evaluatePull(7, full), evaluatePull(8, full)];
+      expect([seven.improvementPct, eight.improvementPct]).toEqual([0, 0]);
+      expect(seven.newScore).toBe(eight.newScore);
+      expect(rankPulls([8, 7], full).map(r => r.id)).toEqual([7, 8]);
+    });
+
+    it('still orders the characters that do have data by their gain', () => {
+      expect(rankPulls([8, 5, 1], ctx([])).map(r => r.id)).toEqual([1, 5, 8]);
+    });
+
+    it('treats a character that only has a character-page team (unranked) as covered, scored as tier A', () => {
+      const m = meta();
+      m.characters = m.characters.filter(c => c.id !== 5);
+      m.teams.push({ name: 'Page team', reaction: 'x', tier: 'A', unranked: true, note: '', members: [
+        { id: 5, role: 'Main DPS' }, { id: 2, role: 'Sub DPS' }, { id: 3, role: 'Support' }, { id: 4, role: 'Healer' }] });
+      const c = ctx([2, 3, 4].map(maxed), m);
+      expect(evaluatePull(5, c).inMeta).toBe(true);
+      expect(scoreTeam(m.teams[1], ctx([5, 2, 3, 4].map(maxed), m)).score).toBe(85);  // A = 0.85 of a perfect team
     });
   });
 });
